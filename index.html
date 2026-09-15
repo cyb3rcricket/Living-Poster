@@ -40,14 +40,23 @@
         </div>
 
         <!-- ========================================================= -->
-        <!-- LIVING POSTER V0 CONTROLS -->
+        <!-- LIVING POSTER V1 CONTROLS (Melt into the World) -->
         <!-- ========================================================= -->
         <div id="panel-living-poster" class="proto-subpanel panel-hidden">
-          <div class="section-label">EXPERIENCE (V0)</div>
+          <div class="section-label">EXPERIENCE (V1: MELT)</div>
           <div class="dev-row btn-group" style="grid-template-columns: repeat(3, 1fr);">
             <button id="lp-btn-start" class="action-btn active">START POSTER</button>
             <button id="lp-btn-skip" class="action-btn">SKIP TO ARRIVAL</button>
             <button id="lp-btn-reset" class="action-btn">RESET</button>
+          </div>
+          <div class="section-label">TRANSITION & DEV SHORTCUTS</div>
+          <div class="dev-row btn-group" style="grid-template-columns: repeat(2, 1fr);">
+            <button id="lp-btn-pause" class="mode-btn">PAUSE (M)</button>
+            <button id="lp-btn-thresh" class="mode-btn">RETRY MELT (T)</button>
+          </div>
+          <div class="dev-row btn-group" style="grid-template-columns: repeat(2, 1fr);">
+            <button id="lp-btn-dbg-colors" class="mode-btn">DEBUG COLS (G)</button>
+            <button id="lp-btn-bounds" class="mode-btn">BOUNDS (C)</button>
           </div>
           <div class="section-label">QUALITY</div>
           <div class="dev-row btn-group" style="grid-template-columns: repeat(4, 1fr);">
@@ -57,16 +66,17 @@
             <button id="lp-btn-q-low" class="mode-btn">LOW</button>
           </div>
           <div class="dev-row btn-group" style="grid-template-columns: 1fr;">
-            <button id="lp-btn-hud" class="tech-btn">FPS HUD</button>
+            <button id="lp-btn-hud" class="tech-btn">FPS HUD (P)</button>
           </div>
           <div class="telemetry-box" id="lp-telemetry-box">
             <div class="telem-row"><span class="telem-label">Phase:</span><span id="lp-tel-phase" class="telem-val highlight">POSTER</span></div>
-            <div class="telem-row"><span class="telem-label">Pipeline:</span><span id="lp-tel-pipe" class="telem-val">prototypes</span></div>
+            <div class="telem-row"><span class="telem-label">Time:</span><span id="lp-tel-time" class="telem-val">0.00 s</span></div>
+            <div class="telem-row"><span class="telem-label">Pipeline:</span><span id="lp-tel-pipe" class="telem-val">melt-v1</span></div>
             <div class="telem-row"><span class="telem-label">Quality:</span><span id="lp-tel-quality" class="telem-val">AUTO / MEDIUM</span></div>
             <div class="telem-row"><span class="telem-label">Performance:</span><span id="lp-tel-perf" class="telem-val">— fps</span></div>
             <div class="telem-row"><span class="telem-label">Draws / tris:</span><span id="lp-tel-draws" class="telem-val">0 / 0</span></div>
           </div>
-          <p class="hint-text">ENTER from the poster. WASD + mouse after arrival. ESC unlocks look. R restarts. P toggles FPS HUD. 1–6 return to the labs.</p>
+          <p class="hint-text">ENTER from poster. [M] pause • [G] world-gen debug • [C] chunk bounds • [T] retry melt • [P] HUD • [R] restart. WASD + mouse after arrival.</p>
         </div>
 
         <!-- ========================================================= -->

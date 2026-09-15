@@ -1,0 +1,240 @@
+{
+  "timestamp": "2026-09-15T21:32:40.462Z",
+  "labHeaders": {
+    "1": "PROTOTYPE 01 • DEPTH AWAKENING",
+    "2": "PROTOTYPE 02 • PROXY RECONSTRUCTION",
+    "3": "PROTOTYPE 03 • INVISIBLE HANDOFF",
+    "4": "PROTOTYPE 04 • CITADEL VOLUMETRIC RECONSTRUCTION",
+    "5": "PROTOTYPE 05 • PAINTED OCEAN SPATIAL RECONSTRUCTION",
+    "6": "PROTOTYPE 06 • FIRST CONTROLLED JOURNEY"
+  },
+  "captures": [
+    {
+      "file": "01-poster-frame.png",
+      "label": "Poster (Untouched)",
+      "seek": 0.5,
+      "desc": "Pristine flat painting, perfectly registered at canonical pose (0, 0, 2.0)",
+      "telem": {
+        "phase": "POSTER",
+        "elapsed": 0.5,
+        "camPos": {
+          "x": 0,
+          "y": 0,
+          "z": 2
+        },
+        "camRot": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "perf": {
+          "fps": 64.59627329192547,
+          "frameMs": 16.69449879286391,
+          "drawCalls": 1,
+          "triangles": 204800,
+          "level": "auto",
+          "appliedLevel": "high",
+          "pixelRatio": 1,
+          "renderScale": 1,
+          "pipeline": "melt-v1"
+        }
+      }
+    },
+    {
+      "file": "02-awakening-frame.png",
+      "label": "Awakening",
+      "seek": 2.5,
+      "desc": "Cyan shimmer, breathing ribbons, flare bloom, floating flecks",
+      "telem": {
+        "phase": "AWAKENING",
+        "elapsed": 2.5,
+        "camPos": {
+          "x": 0,
+          "y": 0,
+          "z": 2
+        },
+        "camRot": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "perf": {
+          "fps": 59.99520038568562,
+          "frameMs": 16.652006619742274,
+          "drawCalls": 1,
+          "triangles": 204800,
+          "level": "auto",
+          "appliedLevel": "high",
+          "pixelRatio": 1,
+          "renderScale": 1,
+          "pipeline": "melt-v1"
+        }
+      }
+    },
+    {
+      "file": "03-mid-melt-frame.png",
+      "label": "Mid-Melt",
+      "seek": 6,
+      "desc": "GPU viscous curl melt, semantic depth separation, shards streaming backward",
+      "telem": {
+        "phase": "MELT",
+        "elapsed": 6,
+        "camPos": {
+          "x": -0.004,
+          "y": 0.001,
+          "z": 1.8900000000000001
+        },
+        "camRot": {
+          "x": -0.0005,
+          "y": 0.0015,
+          "z": 0
+        },
+        "perf": {
+          "fps": 48.030739676141074,
+          "frameMs": 17.422722505401858,
+          "drawCalls": 3,
+          "triangles": 208400,
+          "level": "auto",
+          "appliedLevel": "medium",
+          "pixelRatio": 1,
+          "renderScale": 0.8,
+          "pipeline": "melt-v1"
+        }
+      }
+    },
+    {
+      "file": "04-threshold-crossing.png",
+      "label": "Threshold Crossing",
+      "seek": 8,
+      "desc": "Camera passing canvas plane (Z < 1.78), dissolving melt mesh into world",
+      "telem": {
+        "phase": "THRESHOLD CROSSING",
+        "elapsed": 8,
+        "camPos": {
+          "x": -0.008,
+          "y": 0.002,
+          "z": 1.78
+        },
+        "camRot": {
+          "x": -0.001,
+          "y": 0.003,
+          "z": 0
+        },
+        "perf": {
+          "fps": 31.204992797061966,
+          "frameMs": 18.330231564973523,
+          "drawCalls": 26,
+          "triangles": 229476,
+          "level": "auto",
+          "appliedLevel": "low",
+          "pixelRatio": 1,
+          "renderScale": 0.65,
+          "pipeline": "melt-v1"
+        }
+      }
+    },
+    {
+      "file": "05-world-generating.png",
+      "label": "World Generating",
+      "seek": 10.5,
+      "desc": "Continuous flight through crystal corridor chunks forming ahead of lens",
+      "telem": {
+        "phase": "WORLD GENERATION",
+        "elapsed": 10.5,
+        "camPos": {
+          "x": -0.014,
+          "y": 0.0025,
+          "z": 1.8359999999999999
+        },
+        "camRot": {
+          "x": -0.0025,
+          "y": 0.01025,
+          "z": 0
+        },
+        "perf": {
+          "fps": 44.988752809116185,
+          "frameMs": 27.48657456486123,
+          "drawCalls": 26,
+          "triangles": 229476,
+          "level": "auto",
+          "appliedLevel": "medium",
+          "pixelRatio": 1,
+          "renderScale": 0.8,
+          "pipeline": "melt-v1"
+        }
+      }
+    },
+    {
+      "file": "06-arrival-viewpoint.png",
+      "label": "Arrival",
+      "seek": 13.5,
+      "desc": "Settled at rest pose, finished painterly world, ocean, landmarks, sky dome",
+      "telem": {
+        "phase": "ARRIVAL",
+        "elapsed": 13.5,
+        "camPos": {
+          "x": -0.02,
+          "y": 0.003,
+          "z": 1.892
+        },
+        "camRot": {
+          "x": -0.004,
+          "y": 0.0175,
+          "z": 0
+        },
+        "perf": {
+          "fps": 47.9961603085485,
+          "frameMs": 17.519532528291425,
+          "drawCalls": 23,
+          "triangles": 21076,
+          "level": "auto",
+          "appliedLevel": "medium",
+          "pixelRatio": 1,
+          "renderScale": 0.8,
+          "pipeline": "melt-v1"
+        }
+      }
+    }
+  ],
+  "finalTelemetry": {
+    "state": {
+      "phase": "EXPLORATION",
+      "exploring": true,
+      "elapsed": 14.435100000023843,
+      "isPlaying": true,
+      "isPaused": true
+    },
+    "perf": {
+      "fps": 60,
+      "frameMs": 16.651690992869064,
+      "drawCalls": 23,
+      "triangles": 21076,
+      "level": "auto",
+      "appliedLevel": "high",
+      "pixelRatio": 1,
+      "renderScale": 1,
+      "pipeline": "melt-v1"
+    },
+    "bounds": {
+      "minX": -0.09,
+      "maxX": 0.038,
+      "minY": 0,
+      "maxY": 0.018,
+      "minZ": 1.78,
+      "maxZ": 1.97,
+      "min": {
+        "x": -0.09,
+        "y": 0,
+        "z": 1.78
+      },
+      "max": {
+        "x": 0.038,
+        "y": 0.018,
+        "z": 1.97
+      }
+    },
+    "collidersCount": 4,
+    "streamerChunks": 4
+  },
+  "pageErrors": []
+}

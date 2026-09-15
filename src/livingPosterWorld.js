@@ -1,4 +1,5 @@
 import { createV0WaterMaterial } from './shaders/livingPosterWater.js';
+import { WorldStreamer } from './world/worldStreamer.js';
 
 // ============================================================================
 // Living Poster V0 — world geometry module
@@ -60,7 +61,7 @@ const CANON_Z = 2.0;
 const CANON_FOV = 53.130102;
 const U_PAD = 0.5;
 const Z_FAR = -3.0;
-const Z_NEAR = 1.38;
+const Z_NEAR = 1.75;
 const SKY_DIST = 2.0;
 const SKY_SIZE = 2.7;
 
@@ -214,10 +215,10 @@ const SKY_FRAG = /* glsl */ `
     vec2 uv = (vUv - 0.5) / uCover + 0.5;
     vec4 sky = texture2D(uSky, clamp(uv, vec2(0.001), vec2(0.999)));
     vec4 haze = texture2D(uHaze, vUv);
-    float inx = smoothstep(-0.02, 0.03, uv.x) * smoothstep(-0.02, 0.03, 1.0 - uv.x);
-    float iny = smoothstep(-0.02, 0.03, uv.y) * smoothstep(-0.02, 0.03, 1.0 - uv.y);
+    float inx = smoothstep(-0.04, 0.05, uv.x) * smoothstep(-0.04, 0.05, 1.0 - uv.x);
+    float iny = smoothstep(-0.04, 0.05, uv.y) * smoothstep(-0.04, 0.05, 1.0 - uv.y);
     float w = clamp(inx * iny, 0.0, 1.0);
-    vec3 fill = mix(vec3(0.025, 0.03, 0.07), haze.rgb * vec3(0.35, 0.40, 0.55), 0.40);
+    vec3 fill = mix(vec3(0.015, 0.02, 0.05), haze.rgb * vec3(0.35, 0.40, 0.55), 0.40);
     vec3 col = mix(fill, sky.rgb, w);
     gl_FragColor = vec4(col, 1.0);
     #include <colorspace_fragment>
@@ -294,7 +295,9 @@ export function createLivingPosterWorld({ THREE, renderer, container, camera, sc
   const textures = {};
   let skyFollow = null;
   let ribbonA = null;
+  let ribbonCurved = null;
   let ribbonT = 0;
+  let streamer = null;
   let loaded = false;
 
   function track(obj) {
@@ -323,7 +326,7 @@ export function createLivingPosterWorld({ THREE, renderer, container, camera, sc
 
   function buildWater() {
     const segsW = 96;
-    const segsH = 48;
+    const segsH = 64;
     const u0 = -U_PAD;
     const u1 = 1 + U_PAD;
     const positions = [];
@@ -339,6 +342,10 @@ export function createLivingPosterWorld({ THREE, renderer, container, camera, sc
         const u = mix(u0, u1, i / segsW);
         const z = applyWaterContact(u, v, zLin);
         const p = unprojectCanon(u, v, z);
+        if (z > 1.35) {
+          const tNear = (z - 1.35) / (Z_NEAR - 1.35);
+          p.y = mix(p.y, -0.22, tNear * 0.7);
+        }
         positions.push(p.x, p.y, p.z);
         rest.push(p.x, p.y, p.z);
         profileT.push(t);
@@ -614,29 +621,35 @@ export function createLivingPosterWorld({ THREE, renderer, container, camera, sc
       uniforms: {
         uSky: { value: textures.sky },
         uHaze: { value: textures.haze },
-        uCover: { value: 2.0 / SKY_SIZE },
+        uCover: { value: 0.38 },
       },
       vertexShader: SKY_VERT,
       fragmentShader: SKY_FRAG,
       depthTest: true,
       depthWrite: false,
-      side: THREE.FrontSide,
+      side: THREE.BackSide,
     }));
-    const skyGeo = track(new THREE.PlaneGeometry(SKY_SIZE, SKY_SIZE));
+
+    // Curved panoramic cylinder: radius 6.0, height 6.5, arc ~176° facing -Z
+    const radius = 6.0;
+    const height = 6.5;
+    const arc = Math.PI * 0.98;
+    const thetaStart = Math.PI - arc * 0.5;
+    const skyGeo = track(new THREE.CylinderGeometry(radius, radius, height, 48, 8, true, thetaStart, arc));
     const skyMesh = new THREE.Mesh(skyGeo, skyMat);
-    skyMesh.position.set(0, 0, -SKY_DIST);
+    skyMesh.position.set(0, 0.2, 0);
     skyMesh.renderOrder = 0;
     skyMesh.name = 'lp-umbral-giant';
     skyMesh.frustumCulled = false;
     skyFollow.add(skyMesh);
 
     const voidMat = track(new THREE.MeshBasicMaterial({
-      color: 0x0b1020,
+      color: 0x060a16,
       side: THREE.BackSide,
       depthWrite: false,
       depthTest: false,
     }));
-    const voidMesh = new THREE.Mesh(track(new THREE.SphereGeometry(48, 16, 12)), voidMat);
+    const voidMesh = new THREE.Mesh(track(new THREE.SphereGeometry(48, 24, 16)), voidMat);
     voidMesh.renderOrder = -1;
     voidMesh.name = 'lp-void-sphere';
     voidMesh.frustumCulled = false;
@@ -690,6 +703,32 @@ export function createLivingPosterWorld({ THREE, renderer, container, camera, sc
     });
     ribbonA.name = 'lp-ribbons';
     group.add(ribbonA);
+
+    // 3D curved atmospheric ribbon strip weaving between world layers
+    const ribbonGeo = track(new THREE.PlaneGeometry(2.0, 0.28, 36, 4));
+    const pos = ribbonGeo.attributes.position;
+    for (let i = 0; i < pos.count; i++) {
+      const x = pos.getX(i);
+      const y = pos.getY(i);
+      // Curve in Z between layers Z=0.35 and Z=0.55
+      const curveZ = Math.sin(x * 3.2) * 0.09 + Math.cos(x * 1.8) * 0.05;
+      pos.setZ(i, curveZ);
+      pos.setY(i, y + Math.sin(x * 2.5) * 0.04);
+    }
+    ribbonGeo.computeVertexNormals();
+
+    const ribbonMat = track(new THREE.MeshBasicMaterial({
+      map: textures.ribbons,
+      transparent: true,
+      opacity: 0.85,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+    }));
+    ribbonCurved = new THREE.Mesh(ribbonGeo, ribbonMat);
+    ribbonCurved.position.set(0, 0.10, 0.46);
+    ribbonCurved.renderOrder = 3;
+    ribbonCurved.name = 'lp-ribbons-curved';
+    group.add(ribbonCurved);
   }
 
   function buildFlare() {
@@ -764,12 +803,13 @@ export function createLivingPosterWorld({ THREE, renderer, container, camera, sc
     buildSentinel(ringsData);
     buildWater();
     buildFlare();
+    streamer = new WorldStreamer(group);
 
     loaded = true;
     return group;
   }
 
-  function update(dt, cam) {
+  function update(dt, cam, elapsed, immediate = false) {
     const c = cam || camera;
     if (!loaded || !c) return;
     if (skyFollow) {
@@ -779,9 +819,20 @@ export function createLivingPosterWorld({ THREE, renderer, container, camera, sc
     if (ribbonA) {
       ribbonA.position.x = Math.sin(ribbonT * 0.012) * 0.002;
     }
+    if (ribbonCurved) {
+      ribbonCurved.position.x = Math.sin(ribbonT * 0.4) * 0.015;
+      ribbonCurved.position.y = 0.10 + Math.cos(ribbonT * 0.3) * 0.008;
+    }
+    if (streamer) {
+      streamer.update(elapsed != null ? elapsed : ribbonT, c, immediate);
+    }
   }
 
   function dispose() {
+    if (streamer) {
+      streamer.dispose();
+      streamer = null;
+    }
     group.traverse((obj) => {
       if (obj.geometry && obj.geometry.dispose) obj.geometry.dispose();
       if (obj.material) {
@@ -804,5 +855,14 @@ export function createLivingPosterWorld({ THREE, renderer, container, camera, sc
     loadAssets,
     update,
     dispose,
+    get streamer() {
+      return streamer;
+    },
+    toggleDebugColors() {
+      return streamer ? streamer.toggleDebugColors() : false;
+    },
+    toggleBoundaries() {
+      return streamer ? streamer.toggleBoundaries() : false;
+    },
   };
 }

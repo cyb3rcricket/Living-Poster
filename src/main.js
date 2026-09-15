@@ -154,12 +154,17 @@ const p6HudWater = document.getElementById('p6-hud-water');
 const lpBtnStart = document.getElementById('lp-btn-start');
 const lpBtnSkip = document.getElementById('lp-btn-skip');
 const lpBtnReset = document.getElementById('lp-btn-reset');
+const lpBtnPause = document.getElementById('lp-btn-pause');
+const lpBtnThresh = document.getElementById('lp-btn-thresh');
+const lpBtnDbgColors = document.getElementById('lp-btn-dbg-colors');
+const lpBtnBounds = document.getElementById('lp-btn-bounds');
 const lpBtnHud = document.getElementById('lp-btn-hud');
 const lpBtnQAuto = document.getElementById('lp-btn-q-auto');
 const lpBtnQHigh = document.getElementById('lp-btn-q-high');
 const lpBtnQMedium = document.getElementById('lp-btn-q-medium');
 const lpBtnQLow = document.getElementById('lp-btn-q-low');
 const lpTelPhase = document.getElementById('lp-tel-phase');
+const lpTelTime = document.getElementById('lp-tel-time');
 const lpTelPipe = document.getElementById('lp-tel-pipe');
 const lpTelQuality = document.getElementById('lp-tel-quality');
 const lpTelPerf = document.getElementById('lp-tel-perf');
@@ -391,7 +396,7 @@ function switchPrototype(id) {
     p4: 'Switched to Prototype 04: Citadel Volumetric Reconstruction',
     p5: 'Switched to Prototype 05: Painted Ocean Spatial Reconstruction',
     p6: 'Switched to Prototype 06: First Controlled Journey',
-    lp: 'Switched to Living Poster V0',
+    lp: 'Switched to Living Poster V1: Melt into the World',
   };
   showToast(names[id] || id);
 }
@@ -422,7 +427,7 @@ function updateActiveUI() {
   panelLivingPoster.classList.toggle('panel-hidden', !isLP);
   p6Hud.classList.toggle('panel-hidden', !isP6 || !proto06.state.hudVisible);
 
-  if (isLP) devHeaderTitle.textContent = 'LIVING POSTER V0';
+  if (isLP) devHeaderTitle.textContent = 'LIVING POSTER V1 • MELT INTO THE WORLD';
   else if (isP1) devHeaderTitle.textContent = 'PROTOTYPE 01 • DEPTH AWAKENING';
   else if (isP2) devHeaderTitle.textContent = 'PROTOTYPE 02 • PROXY RECONSTRUCTION';
   else if (isP3) devHeaderTitle.textContent = 'PROTOTYPE 03 • INVISIBLE HANDOFF';
@@ -1233,6 +1238,7 @@ function updateLpTelemetryUI() {
   const s = livingPoster.getPerfStats();
   const applied = s.appliedLevel ? String(s.appliedLevel).toUpperCase() : 'MEDIUM';
   lpTelPhase.textContent = st.phase;
+  if (lpTelTime) lpTelTime.textContent = `${st.elapsed.toFixed(2)} s${st.isPaused ? ' (PAUSED)' : ''}`;
   lpTelPipe.textContent = s.pipeline || '—';
   lpTelQuality.textContent = `${String(s.level || 'auto').toUpperCase()} / ${applied}`;
   lpTelPerf.textContent = `${Number(s.fps).toFixed(0)} fps (${Number(s.frameMs).toFixed(1)} ms)  pr ${Number(s.pixelRatio).toFixed(2)}×${Number(s.renderScale).toFixed(2)}`;
@@ -1253,6 +1259,30 @@ function initLivingPosterEvents() {
     livingPoster.resetToPoster();
     updateActiveUI();
   });
+  if (lpBtnPause) {
+    lpBtnPause.addEventListener('click', () => {
+      const paused = livingPoster.togglePause();
+      lpBtnPause.classList.toggle('active', paused);
+    });
+  }
+  if (lpBtnThresh) {
+    lpBtnThresh.addEventListener('click', () => {
+      livingPoster.restartThreshold();
+      hideP6EnterOverlay();
+    });
+  }
+  if (lpBtnDbgColors) {
+    lpBtnDbgColors.addEventListener('click', () => {
+      const on = livingPoster.toggleDebugColors();
+      lpBtnDbgColors.classList.toggle('active', on);
+    });
+  }
+  if (lpBtnBounds) {
+    lpBtnBounds.addEventListener('click', () => {
+      const on = livingPoster.toggleChunkBoundaries();
+      lpBtnBounds.classList.toggle('active', on);
+    });
+  }
   lpBtnHud.addEventListener('click', () => {
     const on = livingPoster.togglePerfHud();
     lpBtnHud.classList.toggle('active', on);
