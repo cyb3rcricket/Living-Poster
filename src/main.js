@@ -5,6 +5,7 @@ import { Prototype03 } from './prototype03.js';
 import { Prototype04 } from './prototype04.js';
 import { Prototype05 } from './prototype05.js';
 import { Prototype06 } from './prototype06.js';
+import { LivingPoster } from './livingPoster.js';
 
 // ============================================================================
 // Shared WebGL Setup & Application Controller
@@ -25,12 +26,14 @@ const tabProto03 = document.getElementById('tab-proto-03');
 const tabProto04 = document.getElementById('tab-proto-04');
 const tabProto05 = document.getElementById('tab-proto-05');
 const tabProto06 = document.getElementById('tab-proto-06');
+const tabLivingPoster = document.getElementById('tab-living-poster');
 const panelProto01 = document.getElementById('panel-proto-01');
 const panelProto02 = document.getElementById('panel-proto-02');
 const panelProto03 = document.getElementById('panel-proto-03');
 const panelProto04 = document.getElementById('panel-proto-04');
 const panelProto05 = document.getElementById('panel-proto-05');
 const panelProto06 = document.getElementById('panel-proto-06');
+const panelLivingPoster = document.getElementById('panel-living-poster');
 
 // Prototype 04 DOM Elements
 const p4BtnPoster = document.getElementById('p4-btn-poster');
@@ -148,6 +151,20 @@ const p6HudP03 = document.getElementById('p6-hud-p03');
 const p6HudCitadel = document.getElementById('p6-hud-citadel');
 const p6HudWater = document.getElementById('p6-hud-water');
 
+const lpBtnStart = document.getElementById('lp-btn-start');
+const lpBtnSkip = document.getElementById('lp-btn-skip');
+const lpBtnReset = document.getElementById('lp-btn-reset');
+const lpBtnHud = document.getElementById('lp-btn-hud');
+const lpBtnQAuto = document.getElementById('lp-btn-q-auto');
+const lpBtnQHigh = document.getElementById('lp-btn-q-high');
+const lpBtnQMedium = document.getElementById('lp-btn-q-medium');
+const lpBtnQLow = document.getElementById('lp-btn-q-low');
+const lpTelPhase = document.getElementById('lp-tel-phase');
+const lpTelPipe = document.getElementById('lp-tel-pipe');
+const lpTelQuality = document.getElementById('lp-tel-quality');
+const lpTelPerf = document.getElementById('lp-tel-perf');
+const lpTelDraws = document.getElementById('lp-tel-draws');
+
 // Prototype 03 DOM Elements
 const p3BadgeStage = document.getElementById('p3-badge-stage');
 const p3ValProgress = document.getElementById('p3-val-progress');
@@ -256,6 +273,12 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2.0));
 renderer.setSize(container.clientWidth, container.clientHeight, false);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 
+const HOST_PIXEL_RATIO_CAP = 2.0;
+function applyHostRendererScale() {
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, HOST_PIXEL_RATIO_CAP));
+  renderer.setSize(container.clientWidth, container.clientHeight, false);
+}
+
 // Instantiate all four prototypes
 const proto01 = new Prototype01(renderer, container, showToast);
 const proto02 = new Prototype02(renderer, container, showToast);
@@ -263,17 +286,24 @@ const proto03 = new Prototype03(renderer, container, showToast);
 const proto04 = new Prototype04(renderer, container, showToast);
 const proto05 = new Prototype05(renderer, container, showToast);
 const proto06 = new Prototype06(renderer, container, showToast);
+const livingPoster = new LivingPoster(renderer, container, showToast);
 window.__p05 = proto05;
 window.__p06 = proto06;
+window.__livingPoster = livingPoster;
+applyHostRendererScale();
 
-// Active prototype reference ('p1'–'p5'). Default remains Prototype 04.
+// Active prototype reference ('p1'–'p6' or 'lp'). Default remains Prototype 04.
 let activeProtoId = 'p4';
 let activeProto = proto04;
 
-// Check URL query param ?p=1, ?p=2, ?p=3, ?p=4, or ?p=5
+// Check URL: ?experience=1 is Living Poster V0; ?p=1…?p=6 remain lab prototypes.
 const urlParams = new URLSearchParams(window.location.search);
+const expParam = urlParams.get('experience');
 const pParam = urlParams.get('p');
-if (pParam === '1') {
+if (expParam === '1') {
+  activeProtoId = 'lp';
+  activeProto = livingPoster;
+} else if (pParam === '1') {
   activeProtoId = 'p1';
   activeProto = proto01;
 } else if (pParam === '2') {
@@ -293,6 +323,10 @@ if (pParam === '1') {
   activeProto = proto04;
 }
 
+if (activeProtoId === 'lp') {
+  livingPoster.setActive(true);
+}
+
 // Immediately synchronize UI with active prototype
 updateActiveUI();
 
@@ -304,6 +338,7 @@ Promise.all([
   proto04.loadAssets().catch(err => console.error('P04 asset load error:', err)),
   proto05.loadAssets().catch(err => console.error('P05 asset load error:', err)),
   proto06.loadAssets().catch(err => console.error('P06 asset load error:', err)),
+  livingPoster.loadAssets().catch(err => console.error('LivingPoster asset load error:', err)),
 ]).then(() => {
   console.log('All prototype assets loaded successfully.');
   updateActiveUI();
@@ -315,21 +350,37 @@ Promise.all([
 // ============================================================================
 function switchPrototype(id) {
   if (activeProtoId === id) return;
+  const previousId = activeProtoId;
   activeProtoId = id;
   if (id === 'p1') activeProto = proto01;
   else if (id === 'p2') activeProto = proto02;
   else if (id === 'p3') activeProto = proto03;
   else if (id === 'p5') activeProto = proto05;
   else if (id === 'p6') activeProto = proto06;
+  else if (id === 'lp') activeProto = livingPoster;
   else activeProto = proto04;
 
-  if (id === 'p6') {
+  if (previousId === 'lp') {
+    livingPoster.setActive(false);
+    applyHostRendererScale();
+  }
+
+  if (id === 'lp') {
+    livingPoster.setActive(true);
+    livingPoster.onResize(container.clientWidth, container.clientHeight);
+  } else if (id === 'p6') {
     proto06.onResize(container.clientWidth, container.clientHeight);
   }
 
   // Update URL without page reload
   const newUrl = new URL(window.location.href);
-  newUrl.searchParams.set('p', id.replace('p', ''));
+  if (id === 'lp') {
+    newUrl.searchParams.delete('p');
+    newUrl.searchParams.set('experience', '1');
+  } else {
+    newUrl.searchParams.delete('experience');
+    newUrl.searchParams.set('p', id.replace('p', ''));
+  }
   window.history.replaceState({}, '', newUrl);
 
   updateActiveUI();
@@ -340,6 +391,7 @@ function switchPrototype(id) {
     p4: 'Switched to Prototype 04: Citadel Volumetric Reconstruction',
     p5: 'Switched to Prototype 05: Painted Ocean Spatial Reconstruction',
     p6: 'Switched to Prototype 06: First Controlled Journey',
+    lp: 'Switched to Living Poster V0',
   };
   showToast(names[id] || id);
 }
@@ -351,6 +403,7 @@ function updateActiveUI() {
   const isP4 = activeProtoId === 'p4';
   const isP5 = activeProtoId === 'p5';
   const isP6 = activeProtoId === 'p6';
+  const isLP = activeProtoId === 'lp';
 
   tabProto01.classList.toggle('active', isP1);
   tabProto02.classList.toggle('active', isP2);
@@ -358,6 +411,7 @@ function updateActiveUI() {
   tabProto04.classList.toggle('active', isP4);
   tabProto05.classList.toggle('active', isP5);
   tabProto06.classList.toggle('active', isP6);
+  tabLivingPoster.classList.toggle('active', isLP);
 
   panelProto01.classList.toggle('panel-hidden', !isP1);
   panelProto02.classList.toggle('panel-hidden', !isP2);
@@ -365,9 +419,11 @@ function updateActiveUI() {
   panelProto04.classList.toggle('panel-hidden', !isP4);
   panelProto05.classList.toggle('panel-hidden', !isP5);
   panelProto06.classList.toggle('panel-hidden', !isP6);
+  panelLivingPoster.classList.toggle('panel-hidden', !isLP);
   p6Hud.classList.toggle('panel-hidden', !isP6 || !proto06.state.hudVisible);
 
-  if (isP1) devHeaderTitle.textContent = 'PROTOTYPE 01 • DEPTH AWAKENING';
+  if (isLP) devHeaderTitle.textContent = 'LIVING POSTER V0';
+  else if (isP1) devHeaderTitle.textContent = 'PROTOTYPE 01 • DEPTH AWAKENING';
   else if (isP2) devHeaderTitle.textContent = 'PROTOTYPE 02 • PROXY RECONSTRUCTION';
   else if (isP3) devHeaderTitle.textContent = 'PROTOTYPE 03 • INVISIBLE HANDOFF';
   else if (isP5) devHeaderTitle.textContent = 'PROTOTYPE 05 • PAINTED OCEAN SPATIAL RECONSTRUCTION';
@@ -375,7 +431,12 @@ function updateActiveUI() {
   else devHeaderTitle.textContent = 'PROTOTYPE 04 • CITADEL VOLUMETRIC RECONSTRUCTION';
 
   // Manage ENTER overlay
-  if (isP6 && proto06.state.elapsed <= 0.0001 && !proto06.state.playing) {
+  if (isLP) {
+    const st = livingPoster.getState();
+    const showEnter = st.phase === 'POSTER' && !st.exploring;
+    enterOverlay.classList.toggle('overlay-state-hidden', !showEnter);
+    enterOverlay.classList.toggle('overlay-state-visible', showEnter);
+  } else if (isP6 && proto06.state.elapsed <= 0.0001 && !proto06.state.playing) {
     enterOverlay.classList.remove('overlay-state-hidden');
     enterOverlay.classList.add('overlay-state-visible');
   } else if (isP3 && proto03.state.masterProgress <= 0.0001 && !proto03.state.isPlaying) {
@@ -398,7 +459,11 @@ let isUserDraggingP3Slider = false;
 
 function initPrototype03Events() {
   enterBtn.addEventListener('click', () => {
-    if (activeProtoId === 'p6') {
+    if (activeProtoId === 'lp') {
+      livingPoster.startExperience();
+      enterOverlay.classList.remove('overlay-state-visible');
+      enterOverlay.classList.add('overlay-state-hidden');
+    } else if (activeProtoId === 'p6') {
       proto06.startJourney();
       enterOverlay.classList.remove('overlay-state-visible');
       enterOverlay.classList.add('overlay-state-hidden');
@@ -1156,10 +1221,61 @@ function initPrototype06Events() {
   });
 }
 
+function updateLpQualityButtons(level) {
+  lpBtnQAuto.classList.toggle('active', level === 'auto');
+  lpBtnQHigh.classList.toggle('active', level === 'high');
+  lpBtnQMedium.classList.toggle('active', level === 'medium');
+  lpBtnQLow.classList.toggle('active', level === 'low');
+}
+
+function updateLpTelemetryUI() {
+  const st = livingPoster.getState();
+  const s = livingPoster.getPerfStats();
+  const applied = s.appliedLevel ? String(s.appliedLevel).toUpperCase() : 'MEDIUM';
+  lpTelPhase.textContent = st.phase;
+  lpTelPipe.textContent = s.pipeline || '—';
+  lpTelQuality.textContent = `${String(s.level || 'auto').toUpperCase()} / ${applied}`;
+  lpTelPerf.textContent = `${Number(s.fps).toFixed(0)} fps (${Number(s.frameMs).toFixed(1)} ms)  pr ${Number(s.pixelRatio).toFixed(2)}×${Number(s.renderScale).toFixed(2)}`;
+  lpTelDraws.textContent = `${s.drawCalls || 0} / ${s.triangles || 0}`;
+}
+
+function initLivingPosterEvents() {
+  lpBtnStart.addEventListener('click', () => {
+    livingPoster.resetToPoster();
+    livingPoster.startExperience();
+    hideP6EnterOverlay();
+  });
+  lpBtnSkip.addEventListener('click', () => {
+    livingPoster.skipToArrival();
+    hideP6EnterOverlay();
+  });
+  lpBtnReset.addEventListener('click', () => {
+    livingPoster.resetToPoster();
+    updateActiveUI();
+  });
+  lpBtnHud.addEventListener('click', () => {
+    const on = livingPoster.togglePerfHud();
+    lpBtnHud.classList.toggle('active', on);
+  });
+  const qualityMap = {
+    auto: lpBtnQAuto,
+    high: lpBtnQHigh,
+    medium: lpBtnQMedium,
+    low: lpBtnQLow,
+  };
+  Object.entries(qualityMap).forEach(([level, btn]) => {
+    btn.addEventListener('click', () => {
+      livingPoster.setQuality(level);
+      updateLpQualityButtons(level);
+    });
+  });
+}
+
 // ============================================================================
 // Global Interaction & Keyboard Routing
 // ============================================================================
 function initGlobalEvents() {
+  tabLivingPoster.addEventListener('click', () => switchPrototype('lp'));
   tabProto01.addEventListener('click', () => switchPrototype('p1'));
   tabProto02.addEventListener('click', () => switchPrototype('p2'));
   tabProto03.addEventListener('click', () => switchPrototype('p3'));
@@ -1181,7 +1297,9 @@ function initGlobalEvents() {
     const x = ((e.clientX - rect.left) / rect.width) * 2.0 - 1.0;
     const y = ((e.clientY - rect.top) / rect.height) * 2.0 - 1.0;
 
-    if (activeProtoId === 'p6') {
+    if (activeProtoId === 'lp') {
+      livingPoster.onPointerMove(x, y);
+    } else if (activeProtoId === 'p6') {
       proto06.onPointerMove(x, y);
     } else if (activeProtoId === 'p5') {
       proto05.onPointerMove(x, y);
@@ -1222,7 +1340,13 @@ function initGlobalEvents() {
     // [Space]: Contextual Action
     else if (e.code === 'Space') {
       e.preventDefault();
-      if (activeProtoId === 'p6') {
+      if (activeProtoId === 'lp') {
+        const st = livingPoster.getState();
+        if (st.phase === 'POSTER' && !st.exploring) {
+          livingPoster.startExperience();
+          hideP6EnterOverlay();
+        }
+      } else if (activeProtoId === 'p6') {
         proto06.togglePause();
       } else if (activeProtoId === 'p5') {
         const nextMode = proto05.config.comparisonMode === 'card' ? 'slab' : 'card';
@@ -1245,7 +1369,10 @@ function initGlobalEvents() {
     }
     // [R]: Replay (P03, P01)
     else if (e.key === 'r' || e.key === 'R') {
-      if (activeProtoId === 'p6') {
+      if (activeProtoId === 'lp') {
+        livingPoster.restart();
+        hideP6EnterOverlay();
+      } else if (activeProtoId === 'p6') {
         proto06.replay();
         hideP6EnterOverlay();
       } else if (activeProtoId === 'p3') {
@@ -1293,7 +1420,10 @@ function initGlobalEvents() {
     }
     // [P]: Toggle Parallax
     else if (e.key === 'p' || e.key === 'P') {
-      if (activeProtoId === 'p5') {
+      if (activeProtoId === 'lp') {
+        const on = livingPoster.togglePerfHud();
+        lpBtnHud.classList.toggle('active', on);
+      } else if (activeProtoId === 'p5') {
         proto05.config.parallaxEnabled = !proto05.config.parallaxEnabled;
         showToast(proto05.config.parallaxEnabled ? 'Parallax: ENABLED' : 'Parallax: LOCKED');
       } else if (activeProtoId === 'p4') {
@@ -1391,13 +1521,20 @@ function initGlobalEvents() {
 function handleResize() {
   const width = container.clientWidth;
   const height = container.clientHeight;
-  renderer.setSize(width, height, false);
+  if (activeProtoId === 'lp') {
+    if (livingPoster.quality && typeof livingPoster.quality.apply === 'function') {
+      livingPoster.quality.apply();
+    }
+  } else {
+    applyHostRendererScale();
+  }
   proto01.onResize(width, height);
   proto02.onResize(width, height);
   proto03.onResize(width, height);
   proto04.onResize(width, height);
   proto05.onResize(width, height);
   proto06.onResize(width, height);
+  livingPoster.onResize(width, height);
 }
 
 // Initialize all event bindings
@@ -1407,6 +1544,7 @@ initPrototype03Events();
 initPrototype04Events();
 initPrototype05Events();
 initPrototype06Events();
+initLivingPosterEvents();
 initGlobalEvents();
 
 // ============================================================================
@@ -1416,7 +1554,10 @@ function animate() {
   requestAnimationFrame(animate);
   const now = performance.now();
 
-  if (activeProtoId === 'p6') {
+  if (activeProtoId === 'lp') {
+    livingPoster.update(now);
+    updateLpTelemetryUI();
+  } else if (activeProtoId === 'p6') {
     proto06.update(now);
     updateP6TelemetryUI();
   } else if (activeProtoId === 'p5') {

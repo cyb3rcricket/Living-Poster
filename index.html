@@ -30,12 +30,43 @@
       <div class="dev-content">
         <!-- Prototype Selector Tabs -->
         <div class="proto-tabs">
+          <button id="tab-living-poster" class="proto-tab-btn lp-experience-tab">LIVING POSTER</button>
           <button id="tab-proto-06" class="proto-tab-btn">P06 (Journey)</button>
           <button id="tab-proto-05" class="proto-tab-btn">P05 (Ocean)</button>
           <button id="tab-proto-04" class="proto-tab-btn active">P04 (Volume)</button>
           <button id="tab-proto-03" class="proto-tab-btn">P03 (Handoff)</button>
           <button id="tab-proto-02" class="proto-tab-btn">P02 (Proxies)</button>
           <button id="tab-proto-01" class="proto-tab-btn">P01 (Awaken)</button>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- LIVING POSTER V0 CONTROLS -->
+        <!-- ========================================================= -->
+        <div id="panel-living-poster" class="proto-subpanel panel-hidden">
+          <div class="section-label">EXPERIENCE (V0)</div>
+          <div class="dev-row btn-group" style="grid-template-columns: repeat(3, 1fr);">
+            <button id="lp-btn-start" class="action-btn active">START POSTER</button>
+            <button id="lp-btn-skip" class="action-btn">SKIP TO ARRIVAL</button>
+            <button id="lp-btn-reset" class="action-btn">RESET</button>
+          </div>
+          <div class="section-label">QUALITY</div>
+          <div class="dev-row btn-group" style="grid-template-columns: repeat(4, 1fr);">
+            <button id="lp-btn-q-auto" class="mode-btn active">AUTO</button>
+            <button id="lp-btn-q-high" class="mode-btn">HIGH</button>
+            <button id="lp-btn-q-medium" class="mode-btn">MEDIUM</button>
+            <button id="lp-btn-q-low" class="mode-btn">LOW</button>
+          </div>
+          <div class="dev-row btn-group" style="grid-template-columns: 1fr;">
+            <button id="lp-btn-hud" class="tech-btn">FPS HUD</button>
+          </div>
+          <div class="telemetry-box" id="lp-telemetry-box">
+            <div class="telem-row"><span class="telem-label">Phase:</span><span id="lp-tel-phase" class="telem-val highlight">POSTER</span></div>
+            <div class="telem-row"><span class="telem-label">Pipeline:</span><span id="lp-tel-pipe" class="telem-val">prototypes</span></div>
+            <div class="telem-row"><span class="telem-label">Quality:</span><span id="lp-tel-quality" class="telem-val">AUTO / MEDIUM</span></div>
+            <div class="telem-row"><span class="telem-label">Performance:</span><span id="lp-tel-perf" class="telem-val">— fps</span></div>
+            <div class="telem-row"><span class="telem-label">Draws / tris:</span><span id="lp-tel-draws" class="telem-val">0 / 0</span></div>
+          </div>
+          <p class="hint-text">ENTER from the poster. WASD + mouse after arrival. ESC unlocks look. R restarts. P toggles FPS HUD. 1–6 return to the labs.</p>
         </div>
 
         <!-- ========================================================= -->
@@ -457,7 +488,7 @@
         </div>
 
         <div class="dev-hotkeys">
-          <small>Hotkeys: [1]–[6] prototypes &bull; [Space] contextual &bull; [R] Replay &bull; [H] Hide UI</small>
+          <small>Hotkeys: [1]–[6] labs &bull; Living Poster via tab / ?experience=1 &bull; [R] Restart &bull; [P] FPS HUD (V0) &bull; [H] Hide UI</small>
         </div>
       </div>
     </div>

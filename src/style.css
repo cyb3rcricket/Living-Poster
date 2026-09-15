@@ -267,6 +267,20 @@ button.mode-btn.active, button.tech-btn.active, button.action-btn.active {
   font-weight: 600;
 }
 
+.proto-tab-btn.lp-experience-tab {
+  flex: 1 1 100%;
+  letter-spacing: 0.14em;
+  font-size: 10px;
+  color: var(--accent-gold);
+  border-color: rgba(255, 229, 128, 0.28);
+}
+
+.proto-tab-btn.lp-experience-tab.active {
+  background: rgba(255, 229, 128, 0.18);
+  border-color: var(--accent-gold);
+  color: #fff;
+}
+
 .proto-subpanel {
   display: flex;
   flex-direction: column;
