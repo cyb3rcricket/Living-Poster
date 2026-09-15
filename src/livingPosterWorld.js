@@ -61,7 +61,7 @@ const U_PAD = 0.5;
 const Z_FAR = -3.0;
 const Z_NEAR = 1.38;
 const SKY_DIST = 2.0;
-const SKY_SIZE = 2.0;
+const SKY_SIZE = 2.7;
 
 const BOUNDS = Object.freeze({
   minX: -0.090,
@@ -213,10 +213,10 @@ const SKY_FRAG = /* glsl */ `
     vec2 uv = (vUv - 0.5) / uCover + 0.5;
     vec4 sky = texture2D(uSky, clamp(uv, vec2(0.001), vec2(0.999)));
     vec4 haze = texture2D(uHaze, vUv);
-    float inx = smoothstep(-0.05, 0.02, uv.x) * smoothstep(-0.05, 0.02, 1.0 - uv.x);
-    float iny = smoothstep(-0.05, 0.02, uv.y) * smoothstep(-0.05, 0.02, 1.0 - uv.y);
+    float inx = smoothstep(-0.02, 0.03, uv.x) * smoothstep(-0.02, 0.03, 1.0 - uv.x);
+    float iny = smoothstep(-0.02, 0.03, uv.y) * smoothstep(-0.02, 0.03, 1.0 - uv.y);
     float w = clamp(inx * iny, 0.0, 1.0);
-    vec3 fill = haze.rgb * vec3(0.42, 0.48, 0.72);
+    vec3 fill = mix(vec3(0.025, 0.03, 0.07), haze.rgb * vec3(0.35, 0.40, 0.55), 0.40);
     vec3 col = mix(fill, sky.rgb, w);
     gl_FragColor = vec4(col, 1.0);
     #include <colorspace_fragment>
@@ -609,8 +609,14 @@ export function createLivingPosterWorld({ THREE, renderer, container, camera, sc
     skyFollow.name = 'lp-sky-follow';
     group.add(skyFollow);
 
-    const skyMat = track(new THREE.MeshBasicMaterial({
-      map: textures.sky,
+    const skyMat = track(new THREE.ShaderMaterial({
+      uniforms: {
+        uSky: { value: textures.sky },
+        uHaze: { value: textures.haze },
+        uCover: { value: 2.0 / SKY_SIZE },
+      },
+      vertexShader: SKY_VERT,
+      fragmentShader: SKY_FRAG,
       depthTest: true,
       depthWrite: false,
       side: THREE.FrontSide,
