@@ -410,6 +410,9 @@ export class LivingPoster {
     this._adoptP04Citadel();
     this._syncWorldCameraFromRest();
 
+    // Re-bind explorer so SKIP/RESET while already in WORLD adopts the rest pose
+    // (enable() is a no-op if already enabled and would keep a stale walk pose).
+    this.explorer.disable();
     if (this._active) {
       this.explorer.setEnabled(true);
       this.explorer.enable();
