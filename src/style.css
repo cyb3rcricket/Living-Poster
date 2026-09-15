@@ -458,3 +458,31 @@ button.layer-toggle-btn.active {
   opacity: 0;
   transform: translate(-50%, -10px);
 }
+
+#p6-hud {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  z-index: 25;
+  background: rgba(8, 12, 28, 0.78);
+  border: 1px solid rgba(60, 165, 196, 0.35);
+  color: var(--text-primary);
+  font-size: 11px;
+  line-height: 1.45;
+  letter-spacing: 0.04em;
+  padding: 8px 10px;
+  border-radius: 4px;
+  pointer-events: none;
+  min-width: 210px;
+}
+
+#p6-hud.panel-hidden {
+  display: none;
+}
+
+.hint-text {
+  color: var(--text-muted);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+}

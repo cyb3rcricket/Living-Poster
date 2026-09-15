@@ -4,6 +4,7 @@ import { Prototype02 } from './prototype02.js';
 import { Prototype03 } from './prototype03.js';
 import { Prototype04 } from './prototype04.js';
 import { Prototype05 } from './prototype05.js';
+import { Prototype06 } from './prototype06.js';
 
 // ============================================================================
 // Shared WebGL Setup & Application Controller
@@ -23,11 +24,13 @@ const tabProto02 = document.getElementById('tab-proto-02');
 const tabProto03 = document.getElementById('tab-proto-03');
 const tabProto04 = document.getElementById('tab-proto-04');
 const tabProto05 = document.getElementById('tab-proto-05');
+const tabProto06 = document.getElementById('tab-proto-06');
 const panelProto01 = document.getElementById('panel-proto-01');
 const panelProto02 = document.getElementById('panel-proto-02');
 const panelProto03 = document.getElementById('panel-proto-03');
 const panelProto04 = document.getElementById('panel-proto-04');
 const panelProto05 = document.getElementById('panel-proto-05');
+const panelProto06 = document.getElementById('panel-proto-06');
 
 // Prototype 04 DOM Elements
 const p4BtnPoster = document.getElementById('p4-btn-poster');
@@ -126,6 +129,24 @@ const p5TelZn = document.getElementById('p5-tel-zn');
 const p5TelCam = document.getElementById('p5-tel-cam');
 const p5TelHorizon = document.getElementById('p5-tel-horizon');
 const p5TelPerf = document.getElementById('p5-tel-perf');
+
+const p6BtnEnter = document.getElementById('p6-btn-enter');
+const p6BtnPause = document.getElementById('p6-btn-pause');
+const p6BtnReplay = document.getElementById('p6-btn-replay');
+const p6TelStage = document.getElementById('p6-tel-stage');
+const p6TelTime = document.getElementById('p6-tel-time');
+const p6TelCam = document.getElementById('p6-tel-cam');
+const p6TelRot = document.getElementById('p6-tel-rot');
+const p6TelP03 = document.getElementById('p6-tel-p03');
+const p6TelOwn = document.getElementById('p6-tel-own');
+const p6Hud = document.getElementById('p6-hud');
+const p6HudStage = document.getElementById('p6-hud-stage');
+const p6HudTime = document.getElementById('p6-hud-time');
+const p6HudCam = document.getElementById('p6-hud-cam');
+const p6HudRot = document.getElementById('p6-hud-rot');
+const p6HudP03 = document.getElementById('p6-hud-p03');
+const p6HudCitadel = document.getElementById('p6-hud-citadel');
+const p6HudWater = document.getElementById('p6-hud-water');
 
 // Prototype 03 DOM Elements
 const p3BadgeStage = document.getElementById('p3-badge-stage');
@@ -241,7 +262,9 @@ const proto02 = new Prototype02(renderer, container, showToast);
 const proto03 = new Prototype03(renderer, container, showToast);
 const proto04 = new Prototype04(renderer, container, showToast);
 const proto05 = new Prototype05(renderer, container, showToast);
+const proto06 = new Prototype06(renderer, container, showToast);
 window.__p05 = proto05;
+window.__p06 = proto06;
 
 // Active prototype reference ('p1'–'p5'). Default remains Prototype 04.
 let activeProtoId = 'p4';
@@ -262,6 +285,9 @@ if (pParam === '1') {
 } else if (pParam === '5') {
   activeProtoId = 'p5';
   activeProto = proto05;
+} else if (pParam === '6') {
+  activeProtoId = 'p6';
+  activeProto = proto06;
 } else {
   activeProtoId = 'p4';
   activeProto = proto04;
@@ -277,6 +303,7 @@ Promise.all([
   proto03.loadAssets().catch(err => console.error('P03 asset load error:', err)),
   proto04.loadAssets().catch(err => console.error('P04 asset load error:', err)),
   proto05.loadAssets().catch(err => console.error('P05 asset load error:', err)),
+  proto06.loadAssets().catch(err => console.error('P06 asset load error:', err)),
 ]).then(() => {
   console.log('All prototype assets loaded successfully.');
   updateActiveUI();
@@ -293,7 +320,12 @@ function switchPrototype(id) {
   else if (id === 'p2') activeProto = proto02;
   else if (id === 'p3') activeProto = proto03;
   else if (id === 'p5') activeProto = proto05;
+  else if (id === 'p6') activeProto = proto06;
   else activeProto = proto04;
+
+  if (id === 'p6') {
+    proto06.onResize(container.clientWidth, container.clientHeight);
+  }
 
   // Update URL without page reload
   const newUrl = new URL(window.location.href);
@@ -307,6 +339,7 @@ function switchPrototype(id) {
     p3: 'Switched to Prototype 03: Invisible Handoff',
     p4: 'Switched to Prototype 04: Citadel Volumetric Reconstruction',
     p5: 'Switched to Prototype 05: Painted Ocean Spatial Reconstruction',
+    p6: 'Switched to Prototype 06: First Controlled Journey',
   };
   showToast(names[id] || id);
 }
@@ -317,27 +350,35 @@ function updateActiveUI() {
   const isP3 = activeProtoId === 'p3';
   const isP4 = activeProtoId === 'p4';
   const isP5 = activeProtoId === 'p5';
+  const isP6 = activeProtoId === 'p6';
 
   tabProto01.classList.toggle('active', isP1);
   tabProto02.classList.toggle('active', isP2);
   tabProto03.classList.toggle('active', isP3);
   tabProto04.classList.toggle('active', isP4);
   tabProto05.classList.toggle('active', isP5);
+  tabProto06.classList.toggle('active', isP6);
 
   panelProto01.classList.toggle('panel-hidden', !isP1);
   panelProto02.classList.toggle('panel-hidden', !isP2);
   panelProto03.classList.toggle('panel-hidden', !isP3);
   panelProto04.classList.toggle('panel-hidden', !isP4);
   panelProto05.classList.toggle('panel-hidden', !isP5);
+  panelProto06.classList.toggle('panel-hidden', !isP6);
+  p6Hud.classList.toggle('panel-hidden', !isP6 || !proto06.state.hudVisible);
 
   if (isP1) devHeaderTitle.textContent = 'PROTOTYPE 01 • DEPTH AWAKENING';
   else if (isP2) devHeaderTitle.textContent = 'PROTOTYPE 02 • PROXY RECONSTRUCTION';
   else if (isP3) devHeaderTitle.textContent = 'PROTOTYPE 03 • INVISIBLE HANDOFF';
   else if (isP5) devHeaderTitle.textContent = 'PROTOTYPE 05 • PAINTED OCEAN SPATIAL RECONSTRUCTION';
+  else if (isP6) devHeaderTitle.textContent = 'PROTOTYPE 06 • FIRST CONTROLLED JOURNEY';
   else devHeaderTitle.textContent = 'PROTOTYPE 04 • CITADEL VOLUMETRIC RECONSTRUCTION';
 
   // Manage ENTER overlay
-  if (isP3 && proto03.state.masterProgress <= 0.0001 && !proto03.state.isPlaying) {
+  if (isP6 && proto06.state.elapsed <= 0.0001 && !proto06.state.playing) {
+    enterOverlay.classList.remove('overlay-state-hidden');
+    enterOverlay.classList.add('overlay-state-visible');
+  } else if (isP3 && proto03.state.masterProgress <= 0.0001 && !proto03.state.isPlaying) {
     enterOverlay.classList.remove('overlay-state-hidden');
     enterOverlay.classList.add('overlay-state-visible');
   } else if (isP1 && !proto01.state.isAwakened && !proto01.state.isTransitioning) {
@@ -357,7 +398,11 @@ let isUserDraggingP3Slider = false;
 
 function initPrototype03Events() {
   enterBtn.addEventListener('click', () => {
-    if (activeProtoId === 'p3') {
+    if (activeProtoId === 'p6') {
+      proto06.startJourney();
+      enterOverlay.classList.remove('overlay-state-visible');
+      enterOverlay.classList.add('overlay-state-hidden');
+    } else if (activeProtoId === 'p3') {
       proto03.startAwakening();
       enterOverlay.classList.remove('overlay-state-visible');
       enterOverlay.classList.add('overlay-state-hidden');
@@ -1066,6 +1111,51 @@ function initPrototype05Events() {
   });
 }
 
+function updateP6TelemetryUI() {
+  const telem = proto06.getTelemetry();
+  const stage = telem.stage;
+  p6TelStage.textContent = stage;
+  p6TelTime.textContent = `${telem.elapsed.toFixed(2)} s`;
+  p6TelCam.textContent = `X ${telem.camX.toFixed(3)} · Y ${telem.camY.toFixed(3)} · Z ${telem.camZ.toFixed(3)}`;
+  p6TelRot.textContent = `${telem.yawDeg.toFixed(2)}° / ${telem.pitchDeg.toFixed(2)}°`;
+  p6TelP03.textContent = telem.p03Progress.toFixed(2);
+  p6TelOwn.textContent = `Citadel ${(telem.citadelOwned * 100).toFixed(0)}% · Water ${(telem.waterOwned * 100).toFixed(0)}%`;
+  p6HudStage.textContent = stage;
+  p6HudTime.textContent = telem.elapsed.toFixed(2);
+  p6HudCam.textContent = `${telem.camX.toFixed(3)} ${telem.camY.toFixed(3)} ${telem.camZ.toFixed(3)}`;
+  p6HudRot.textContent = `${telem.yawDeg.toFixed(2)}° ${telem.pitchDeg.toFixed(2)}°`;
+  p6HudP03.textContent = telem.p03Progress.toFixed(2);
+  p6HudCitadel.textContent = `${(telem.citadelOwned * 100).toFixed(0)}%`;
+  p6HudWater.textContent = `${(telem.waterOwned * 100).toFixed(0)}%`;
+  p6BtnPause.textContent = proto06.state.playing ? 'PAUSE' : (proto06.state.paused ? 'RESUME' : 'PAUSE');
+}
+
+function hideP6EnterOverlay() {
+  enterOverlay.classList.remove('overlay-state-visible');
+  enterOverlay.classList.add('overlay-state-hidden');
+}
+
+function initPrototype06Events() {
+  p6BtnEnter.addEventListener('click', () => {
+    proto06.startJourney();
+    hideP6EnterOverlay();
+  });
+  p6BtnPause.addEventListener('click', () => {
+    proto06.togglePause();
+  });
+  p6BtnReplay.addEventListener('click', () => {
+    proto06.replay();
+    hideP6EnterOverlay();
+  });
+  document.querySelectorAll('.p6-stage-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      proto06.freezeStage(btn.dataset.stage);
+      hideP6EnterOverlay();
+      document.querySelectorAll('.p6-stage-btn').forEach((b) => b.classList.toggle('active', b === btn));
+    });
+  });
+}
+
 // ============================================================================
 // Global Interaction & Keyboard Routing
 // ============================================================================
@@ -1075,6 +1165,7 @@ function initGlobalEvents() {
   tabProto03.addEventListener('click', () => switchPrototype('p3'));
   tabProto04.addEventListener('click', () => switchPrototype('p4'));
   tabProto05.addEventListener('click', () => switchPrototype('p5'));
+  tabProto06.addEventListener('click', () => switchPrototype('p6'));
 
   devToggleBtn.addEventListener('click', () => {
     devPanel.classList.toggle('dev-panel-collapsed');
@@ -1090,7 +1181,9 @@ function initGlobalEvents() {
     const x = ((e.clientX - rect.left) / rect.width) * 2.0 - 1.0;
     const y = ((e.clientY - rect.top) / rect.height) * 2.0 - 1.0;
 
-    if (activeProtoId === 'p5') {
+    if (activeProtoId === 'p6') {
+      proto06.onPointerMove(x, y);
+    } else if (activeProtoId === 'p5') {
       proto05.onPointerMove(x, y);
     } else if (activeProtoId === 'p4') {
       proto04.onPointerMove(x, y);
@@ -1123,10 +1216,15 @@ function initGlobalEvents() {
     else if (e.key === '5') {
       switchPrototype('p5');
     }
+    else if (e.key === '6') {
+      switchPrototype('p6');
+    }
     // [Space]: Contextual Action
     else if (e.code === 'Space') {
       e.preventDefault();
-      if (activeProtoId === 'p5') {
+      if (activeProtoId === 'p6') {
+        proto06.togglePause();
+      } else if (activeProtoId === 'p5') {
         const nextMode = proto05.config.comparisonMode === 'card' ? 'slab' : 'card';
         proto05.setComparisonMode(nextMode);
         updateP5ComparisonButtons(nextMode);
@@ -1147,7 +1245,10 @@ function initGlobalEvents() {
     }
     // [R]: Replay (P03, P01)
     else if (e.key === 'r' || e.key === 'R') {
-      if (activeProtoId === 'p3') {
+      if (activeProtoId === 'p6') {
+        proto06.replay();
+        hideP6EnterOverlay();
+      } else if (activeProtoId === 'p3') {
         proto03.replay();
         enterOverlay.classList.remove('overlay-state-visible');
         enterOverlay.classList.add('overlay-state-hidden');
@@ -1278,6 +1379,10 @@ function initGlobalEvents() {
     }
     // [H]: Hide / Show Dev Panel
     else if (e.key === 'h' || e.key === 'H') {
+      if (activeProtoId === 'p6') {
+        proto06.state.hudVisible = !proto06.state.hudVisible;
+        p6Hud.classList.toggle('panel-hidden', !proto06.state.hudVisible);
+      }
       devPanel.classList.toggle('dev-panel-hidden');
     }
   });
@@ -1292,6 +1397,7 @@ function handleResize() {
   proto03.onResize(width, height);
   proto04.onResize(width, height);
   proto05.onResize(width, height);
+  proto06.onResize(width, height);
 }
 
 // Initialize all event bindings
@@ -1300,6 +1406,7 @@ initPrototype02Events();
 initPrototype03Events();
 initPrototype04Events();
 initPrototype05Events();
+initPrototype06Events();
 initGlobalEvents();
 
 // ============================================================================
@@ -1309,7 +1416,10 @@ function animate() {
   requestAnimationFrame(animate);
   const now = performance.now();
 
-  if (activeProtoId === 'p5') {
+  if (activeProtoId === 'p6') {
+    proto06.update(now);
+    updateP6TelemetryUI();
+  } else if (activeProtoId === 'p5') {
     proto05.update(now);
     updateP5TelemetryUI();
   } else if (activeProtoId === 'p4') {

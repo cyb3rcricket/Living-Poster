@@ -30,11 +30,43 @@
       <div class="dev-content">
         <!-- Prototype Selector Tabs -->
         <div class="proto-tabs">
+          <button id="tab-proto-06" class="proto-tab-btn">P06 (Journey)</button>
           <button id="tab-proto-05" class="proto-tab-btn">P05 (Ocean)</button>
           <button id="tab-proto-04" class="proto-tab-btn active">P04 (Volume)</button>
           <button id="tab-proto-03" class="proto-tab-btn">P03 (Handoff)</button>
           <button id="tab-proto-02" class="proto-tab-btn">P02 (Proxies)</button>
           <button id="tab-proto-01" class="proto-tab-btn">P01 (Awaken)</button>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- PROTOTYPE 06 CONTROLS (First Controlled Journey) -->
+        <!-- ========================================================= -->
+        <div id="panel-proto-06" class="proto-subpanel panel-hidden">
+          <div class="section-label">JOURNEY (DEV)</div>
+          <div class="dev-row btn-group" style="grid-template-columns: repeat(3, 1fr);">
+            <button id="p6-btn-enter" class="action-btn active">ENTER</button>
+            <button id="p6-btn-pause" class="action-btn">PAUSE</button>
+            <button id="p6-btn-replay" class="action-btn">REPLAY (R)</button>
+          </div>
+          <div class="section-label">FREEZE STAGE</div>
+          <div class="dev-row btn-group" style="grid-template-columns: repeat(4, 1fr);">
+            <button class="p6-stage-btn mode-btn" data-stage="POSTER">POSTER</button>
+            <button class="p6-stage-btn mode-btn" data-stage="MID AWAKENING">AWAKEN</button>
+            <button class="p6-stage-btn mode-btn" data-stage="MID HANDOFF">HANDOFF</button>
+            <button class="p6-stage-btn mode-btn" data-stage="POST CITADEL">CITADEL</button>
+            <button class="p6-stage-btn mode-btn" data-stage="POST WATER">WATER</button>
+            <button class="p6-stage-btn mode-btn" data-stage="MID JOURNEY">RAIL</button>
+            <button class="p6-stage-btn mode-btn" data-stage="REST">REST</button>
+          </div>
+          <div class="telemetry-box" id="p6-telemetry-box">
+            <div class="telem-row"><span class="telem-label">Stage:</span><span id="p6-tel-stage" class="telem-val highlight">POSTER</span></div>
+            <div class="telem-row"><span class="telem-label">Time:</span><span id="p6-tel-time" class="telem-val">0.00 s</span></div>
+            <div class="telem-row"><span class="telem-label">Camera:</span><span id="p6-tel-cam" class="telem-val">X 0.000 · Y 0.000 · Z 2.000</span></div>
+            <div class="telem-row"><span class="telem-label">Yaw / Pitch:</span><span id="p6-tel-rot" class="telem-val">0.00° / 0.00°</span></div>
+            <div class="telem-row"><span class="telem-label">P03 p:</span><span id="p6-tel-p03" class="telem-val">0.00</span></div>
+            <div class="telem-row"><span class="telem-label">Ownership:</span><span id="p6-tel-own" class="telem-val">Citadel 0% · Water 0%</span></div>
+          </div>
+          <p class="hint-text">One ENTER. No WASD. No look. Rest is still. [H] hides HUD.</p>
         </div>
 
         <!-- ========================================================= -->
@@ -425,9 +457,19 @@
         </div>
 
         <div class="dev-hotkeys">
-          <small>Hotkeys: [1]–[5] prototypes &bull; [Space] contextual &bull; [S] Sweep/Path &bull; [F] Flare &bull; [H] Hide UI</small>
+          <small>Hotkeys: [1]–[6] prototypes &bull; [Space] contextual &bull; [R] Replay &bull; [H] Hide UI</small>
         </div>
       </div>
+    </div>
+
+    <!-- Prototype 06 development HUD (hide with H) -->
+    <div id="p6-hud" class="p6-hud panel-hidden">
+      <div><b>P06</b> <span id="p6-hud-stage">POSTER</span></div>
+      <div>t <span id="p6-hud-time">0.00</span>s</div>
+      <div>xyz <span id="p6-hud-cam">0.000 0.000 2.000</span></div>
+      <div>yaw/pitch <span id="p6-hud-rot">0.00° 0.00°</span></div>
+      <div>P03 p <span id="p6-hud-p03">0.00</span></div>
+      <div>citadel <span id="p6-hud-citadel">0%</span> · water <span id="p6-hud-water">0%</span></div>
     </div>
 
     <!-- Transient Status HUD -->
