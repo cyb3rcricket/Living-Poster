@@ -26,10 +26,13 @@
 //   Rest (−0.020, 0.003, 1.892) sits inside. Too small to leave the supported
 //   ocean square, enter the Citadel, or pass the Sentinel.
 //
-// Default colliders (when `colliders` is missing / null):
+// Default colliders (when `colliders` is missing, null, or []):
 //   Citadel AABB — P04 mesh (x 0.061–0.685, z 0.63–1.012) padded 0.02
 //   Sentinel circle — Layer C card mass at z=1.25, alpha world x ≈ [−0.368, −0.143]
-//   Empty array [] is respected as “no extra colliders”.
+//   A non-empty array is used as given. [] is treated as missing so parent
+//   wiring (`colliders: w.colliders || []`) still keeps Citadel / Sentinel solid.
+//
+// Bounds also accept the world-stub shape { min:{x,y,z}, max:{x,y,z} }.
 //
 // Collision: XZ positional clamps. AABB shortest-axis push-out, circle radial
 // push-out, then re-clamp to bounds. Four iterations. Not a physics engine.
@@ -107,6 +110,17 @@ function finite(n, fallback) {
 
 function resolveBounds(bounds) {
   if (!bounds) return { ...DEFAULT_BOUNDS };
+  const nested = bounds.min && bounds.max && !Number.isFinite(bounds.minX);
+  if (nested) {
+    return {
+      minX: finite(bounds.min.x, DEFAULT_BOUNDS.minX),
+      maxX: finite(bounds.max.x, DEFAULT_BOUNDS.maxX),
+      minY: finite(bounds.min.y, DEFAULT_BOUNDS.minY),
+      maxY: finite(bounds.max.y, DEFAULT_BOUNDS.maxY),
+      minZ: finite(bounds.min.z, DEFAULT_BOUNDS.minZ),
+      maxZ: finite(bounds.max.z, DEFAULT_BOUNDS.maxZ),
+    };
+  }
   return {
     minX: finite(bounds.minX, DEFAULT_BOUNDS.minX),
     maxX: finite(bounds.maxX, DEFAULT_BOUNDS.maxX),
@@ -139,14 +153,15 @@ function copyCollider(c) {
 }
 
 function resolveColliders(colliders) {
-  if (colliders == null) return DEFAULT_COLLIDERS.map(copyCollider);
-  if (!Array.isArray(colliders)) return DEFAULT_COLLIDERS.map(copyCollider);
+  if (colliders == null || !Array.isArray(colliders) || colliders.length === 0) {
+    return DEFAULT_COLLIDERS.map(copyCollider);
+  }
   const out = [];
   for (let i = 0; i < colliders.length; i += 1) {
     const c = copyCollider(colliders[i]);
     if (c) out.push(c);
   }
-  return out;
+  return out.length ? out : DEFAULT_COLLIDERS.map(copyCollider);
 }
 
 function clampPoseToBounds(pose, bounds) {
@@ -478,9 +493,12 @@ export function createExplorer({ camera = null, bounds, colliders, canvas = null
     el = null;
   }
 
-  return {
+  const api = {
     get enabled() {
       return enabled;
+    },
+    set enabled(value) {
+      setEnabled(!!value);
     },
     enable,
     disable,
@@ -489,4 +507,5 @@ export function createExplorer({ camera = null, bounds, colliders, canvas = null
     dispose,
     getPose,
   };
+  return api;
 }
