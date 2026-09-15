@@ -638,8 +638,9 @@ export function createLivingPosterWorld({ THREE, renderer, container, camera, sc
     const hazeMat = track(new THREE.MeshBasicMaterial({
       map: textures.haze,
       transparent: true,
-      opacity: 0.55,
+      opacity: 0.32,
       depthWrite: false,
+      depthTest: true,
       side: THREE.DoubleSide,
     }));
     const mkHaze = (name, w, h, pos, rotY, order) => {
@@ -650,9 +651,8 @@ export function createLivingPosterWorld({ THREE, renderer, container, camera, sc
       mesh.name = name;
       group.add(mesh);
     };
-    mkHaze('lp-haze-left', 2.8, 2.4, [-1.55, 0.20, 0.15], 0.72, 1);
-    mkHaze('lp-haze-right', 2.6, 2.4, [1.65, 0.22, 0.00], -0.72, 1);
-    mkHaze('lp-haze-far', 8.0, 3.4, [0.10, 0.40, -2.2], 0, 0);
+    mkHaze('lp-haze-left', 2.8, 2.4, [-1.85, 0.20, 0.05], 0.85, 1);
+    mkHaze('lp-haze-right', 2.6, 2.4, [1.95, 0.22, -0.10], -0.85, 1);
 
     const silMat = track(new THREE.MeshBasicMaterial({
       color: 0x152038,
