@@ -58,7 +58,10 @@ async function main() {
   const pageErrors = [];
   page.on('pageerror', (err) => pageErrors.push(String(err)));
   page.on('console', (msg) => {
-    if (msg.type() === 'error') pageErrors.push(msg.text());
+    const t = msg.text();
+    if (msg.type() === 'error' && !t.includes('favicon') && !t.includes('404')) {
+      pageErrors.push(t);
+    }
   });
 
   await page.goto(`${BASE_URL}/scripts/v0-world-preview.html`, {

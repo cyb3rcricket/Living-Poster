@@ -61,7 +61,7 @@ const U_PAD = 0.5;
 const Z_FAR = -3.0;
 const Z_NEAR = 1.38;
 const SKY_DIST = 2.0;
-const SKY_SIZE = 3.2;
+const SKY_SIZE = 2.0;
 
 const BOUNDS = Object.freeze({
   minX: -0.090,
@@ -246,10 +246,9 @@ function unprojectCanon(u, v, z) {
 }
 
 function applyWaterContact(u, v, z) {
-  if (u < -0.02 || u > 1.02) return z;
-  const citadel = smooth01((u - 0.56) / 0.20) * smooth01((v - 0.86) / 0.12);
-  const sent = (1 - smooth01((u - 0.32) / 0.10)) * smooth01((u - 0.02) / 0.05) * smooth01((v - 0.86) / 0.12);
-  const w = Math.min(1, Math.max(citadel, sent) * 0.48);
+  const citadel = smooth01((u - 0.54) / 0.16) * smooth01((v - 0.84) / 0.10);
+  const sent = (1 - smooth01((u - 0.34) / 0.08)) * smooth01((u - 0.00) / 0.04) * smooth01((v - 0.84) / 0.10);
+  const w = Math.min(1, Math.max(citadel, sent) * 0.82);
   return mix(z, 1.02, w);
 }
 
@@ -294,7 +293,6 @@ export function createLivingPosterWorld({ THREE, renderer, container, camera, sc
   const textures = {};
   let skyFollow = null;
   let ribbonA = null;
-  let ribbonB = null;
   let ribbonT = 0;
   let loaded = false;
 
@@ -473,13 +471,13 @@ export function createLivingPosterWorld({ THREE, renderer, container, camera, sc
       const iBL1 = pushVert(b1.pL, [0.0, vSide1], cL1, 1);
       const iFL0s = pushVert(f0.pL, [0.85, vSide0], cL0, 1);
       const iFL1s = pushVert(f1.pL, [0.85, vSide1], cL1, 1);
-      quad(iFL0s, iBL0, iBL1, iFL1s);
+      quad(iFL0s, iFL1s, iBL1, iBL0);
 
       const iBR0 = pushVert(b0.pR, [1.0, vSide0], cR0, 1);
       const iBR1 = pushVert(b1.pR, [1.0, vSide1], cR1, 1);
       const iFR0s = pushVert(f0.pR, [0.85, vSide0], cR0, 1);
       const iFR1s = pushVert(f1.pR, [0.85, vSide1], cR1, 1);
-      quad(iFR0s, iFR1s, iBR1, iBR0);
+      quad(iFR0s, iBR0, iBR1, iFR1s);
 
       const iBLcap = pushVert(b0.pL, [0.15, vSide0], cL0, 1);
       const iBRcap = pushVert(b0.pR, [0.85, vSide0], cR0, 1);
@@ -519,7 +517,7 @@ export function createLivingPosterWorld({ THREE, renderer, container, camera, sc
       transparent: true,
       depthTest: true,
       depthWrite: true,
-      side: THREE.FrontSide,
+      side: THREE.DoubleSide,
     }));
     const mesh = new THREE.Mesh(geo, mat);
     mesh.name = 'lp-sentinel';
@@ -569,8 +567,7 @@ export function createLivingPosterWorld({ THREE, renderer, container, camera, sc
       pivot.name = `${name}-pivot`;
       group.add(pivot);
     };
-    mkCross(1.22, 'lp-needles-cross');
-    mkCross(-0.55, 'lp-needles-wedge');
+    mkCross(1.15, 'lp-needles-cross');
   }
 
   function buildSkyAndHaze() {
@@ -578,14 +575,8 @@ export function createLivingPosterWorld({ THREE, renderer, container, camera, sc
     skyFollow.name = 'lp-sky-follow';
     group.add(skyFollow);
 
-    const skyMat = track(new THREE.ShaderMaterial({
-      uniforms: {
-        uSky: { value: textures.sky },
-        uHaze: { value: textures.haze },
-        uCover: { value: 2.0 / SKY_SIZE },
-      },
-      vertexShader: SKY_VERT,
-      fragmentShader: SKY_FRAG,
+    const skyMat = track(new THREE.MeshBasicMaterial({
+      map: textures.sky,
       depthTest: true,
       depthWrite: false,
       side: THREE.FrontSide,
@@ -625,9 +616,9 @@ export function createLivingPosterWorld({ THREE, renderer, container, camera, sc
       mesh.name = name;
       group.add(mesh);
     };
-    mkHaze('lp-haze-left', 2.4, 2.2, [-1.15, 0.15, 0.35], 0.55, 1);
-    mkHaze('lp-haze-right', 2.2, 2.2, [1.25, 0.20, 0.20], -0.55, 1);
-    mkHaze('lp-haze-far', 6.0, 3.0, [0.15, 0.35, -1.4], 0, 1);
+    mkHaze('lp-haze-left', 2.8, 2.4, [-1.55, 0.20, 0.15], 0.72, 1);
+    mkHaze('lp-haze-right', 2.6, 2.4, [1.65, 0.22, 0.00], -0.72, 1);
+    mkHaze('lp-haze-far', 8.0, 3.4, [0.10, 0.40, -2.2], 0, 0);
 
     const silMat = track(new THREE.MeshBasicMaterial({
       color: 0x152038,
@@ -637,13 +628,13 @@ export function createLivingPosterWorld({ THREE, renderer, container, camera, sc
       side: THREE.DoubleSide,
     }));
     const sil = new THREE.Mesh(track(new THREE.PlaneGeometry(0.18, 0.55)), silMat);
-    sil.position.set(-0.92, -0.18, 0.22);
-    sil.rotation.y = 0.4;
+    sil.position.set(-1.35, -0.12, 0.05);
+    sil.rotation.y = 0.55;
     sil.renderOrder = 1;
     sil.name = 'lp-silhouette-left';
     group.add(sil);
     const sil2 = sil.clone();
-    sil2.position.set(0.95, -0.12, 0.05);
+    sil2.position.set(1.45, -0.10, -0.15);
     sil2.rotation.y = -0.35;
     sil2.scale.set(1.6, 1.4, 1);
     sil2.name = 'lp-silhouette-right';
@@ -653,29 +644,11 @@ export function createLivingPosterWorld({ THREE, renderer, container, camera, sc
   function buildRibbons() {
     ribbonA = calibratedCard(textures.ribbons, 0.40, 2, {
       depthWrite: false,
-      alphaTest: 0.02,
+      alphaTest: 0.04,
       transparent: true,
     });
     ribbonA.name = 'lp-ribbons';
-    ribbonA.material.opacity = 0.96;
     group.add(ribbonA);
-
-    const dist = CANON_Z - 0.38;
-    const geo = track(new THREE.PlaneGeometry(dist * 1.18, dist * 1.18));
-    const mat = track(new THREE.MeshBasicMaterial({
-      map: textures.ribbons,
-      transparent: true,
-      opacity: 0.38,
-      depthWrite: false,
-      blending: THREE.NormalBlending,
-      side: THREE.FrontSide,
-      alphaTest: 0.02,
-    }));
-    ribbonB = new THREE.Mesh(geo, mat);
-    ribbonB.position.set(0.02, 0.01, 0.38);
-    ribbonB.renderOrder = 2;
-    ribbonB.name = 'lp-ribbons-drift';
-    group.add(ribbonB);
   }
 
   function buildFlare() {
@@ -762,12 +735,8 @@ export function createLivingPosterWorld({ THREE, renderer, container, camera, sc
       skyFollow.position.set(c.position.x, c.position.y, c.position.z);
     }
     ribbonT += dt || 0;
-    if (ribbonB) {
-      ribbonB.position.x = 0.02 + Math.sin(ribbonT * 0.035) * 0.012;
-      ribbonB.position.y = 0.01 + Math.cos(ribbonT * 0.027) * 0.006;
-    }
     if (ribbonA) {
-      ribbonA.position.x = Math.sin(ribbonT * 0.018) * 0.004;
+      ribbonA.position.x = Math.sin(ribbonT * 0.012) * 0.003;
     }
   }
 
