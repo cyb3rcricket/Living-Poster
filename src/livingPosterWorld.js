@@ -49,6 +49,7 @@ import { createV0WaterMaterial } from './shaders/livingPosterWater.js';
 //
 // TEXTURE SIZES
 //   canonical cards / citadel front     1024
+//   sky-clean (poster + occluded fill)  1024
 //   ocean continuation atlas            2048×1024
 //   haze fill                           512
 //   sentinel side                       256×512
