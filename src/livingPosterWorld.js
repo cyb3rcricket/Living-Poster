@@ -9,14 +9,16 @@ import { createV0WaterMaterial } from './shaders/livingPosterWater.js';
 // WATER CONTINUATION
 //   Atlas 2048×1024 at reference/experimental/living-poster-v0/
 //   ocean-continuation-2048x1024.png. Center 1024×1024 is the P05 sea-only
-//   painting (interior pixels identical). Wings (u_canon ∈ [−0.5,0] ∪ [1,1.5])
+//   painting (open-sea interior identical; landmark inpaint repaired). Wings (u_canon ∈ [−0.5,0] ∪ [1,1.5])
 //   are low-frequency edge extension + warped samples of nearby original
 //   water + GenerateImage painterly luminance (sides only) + broad dabs +
 //   fBm. No mirror / tile. Opaque indigo–sapphire–cyan–foam. Shader does
 //   NOT discard canonical UV outside [0,1]; it remaps into the atlas.
-//   Geometry: P05 H1 FAR LINEAR, zFar = −3, zNear = 1.38, u ∈ [−0.5, 1.5].
-//   Still (no Gerstner / Fresnel / alive warp). Mild footing contact so the
-//   slab meets Sentinel / Citadel waterlines.
+//   Geometry: P05 H1 FAR LINEAR, zFar = −3, zNear = 1.38, u ∈ [−0.75, 1.75].
+//   Atlas still covers u ∈ [−0.5, 1.5]; extra pad is painterly indigo, not
+//   clamp-stretch. Horizon feathers into atmosphere so the far row is not a
+//   card. Still (no Gerstner / Fresnel / alive warp). Citadel waterline is
+//   pulled forward to overlap the volume; side aprons sit behind the base.
 //
 // SENTINEL
 //   Painted front (layer-c-sentinel.png) via canonical projective sampling
@@ -36,10 +38,11 @@ import { createV0WaterMaterial } from './shaders/livingPosterWater.js';
 //   distant (tracks camera translation, world-aligned — no planet parallax).
 //
 // SUPPORTED CAMERA ENVELOPE (central channel)
-//   Rest pose (−0.020, 0.003, 1.892) is inside. Slightly past P06 Z floor 1.86.
-//   X [−0.090,  0.038]
+//   Rest pose (−0.020, 0.003, 1.892) is inside. Tightened so the H1 slab
+//   is not walked onto as a table.
+//   X [−0.070,  0.028]
 //   Y [ 0.000,  0.018]
-//   Z [ 1.780,  1.970]
+//   Z [ 1.858,  1.970]
 //
 // COLLIDERS (XZ; movement module clamps)
 //   citadel        aabb   X[0.041, 0.705] Z[0.610, 1.032]
@@ -59,17 +62,18 @@ const V0 = 855 / 1024;
 const CANON_Z = 2.0;
 const CANON_FOV = 53.130102;
 const U_PAD = 0.5;
+const GEO_PAD = 0.75;
 const Z_FAR = -3.0;
 const Z_NEAR = 1.38;
 const SKY_DIST = 2.0;
 const SKY_SIZE = 2.7;
 
 const BOUNDS = Object.freeze({
-  minX: -0.090,
-  maxX: 0.038,
+  minX: -0.070,
+  maxX: 0.028,
   minY: 0.000,
   maxY: 0.018,
-  minZ: 1.780,
+  minZ: 1.858,
   maxZ: 1.970,
 });
 
@@ -161,6 +165,10 @@ const CITADEL_FRAG = /* glsl */ `
     vec3 litSide = sideTex.rgb * (coldAmbient + vec3(0.75)) + warmRim + cyanBounce;
     vec3 blendedSide = mix(sideTex.rgb, litSide, uLightingStrength);
     vec3 baseColor = mix(blendedSide, frontTex.rgb, frontWeight);
+    float foot = 1.0 - smoothstep(0.020, 0.168, vCanonUv.y);
+    vec3 wet = vec3(0.14, 0.52, 0.64);
+    baseColor = mix(baseColor, mix(baseColor, wet, 0.70), foot * 0.88);
+    if (foot > 0.82 && frontTex.a < 0.94) discard;
     gl_FragColor = vec4(baseColor, 1.0);
     #include <colorspace_fragment>
   }
@@ -214,6 +222,12 @@ const SKY_FRAG = /* glsl */ `
     vec2 uv = (vUv - 0.5) / uCover + 0.5;
     vec4 sky = texture2D(uSky, clamp(uv, vec2(0.001), vec2(0.999)));
     vec4 haze = texture2D(uHaze, vUv);
+    // Sky card must not carry the painted ocean (that reads as a second rectangle).
+    float horizonUv = 169.0 / 1024.0;
+    float waterBand = 1.0 - smoothstep(horizonUv - 0.012, horizonUv + 0.028, uv.y);
+    vec2 horizonSample = vec2(uv.x, clamp(horizonUv + 0.04 + uv.y * 0.08, 0.001, 0.999));
+    vec3 horizonSky = texture2D(uSky, horizonSample).rgb;
+    sky.rgb = mix(sky.rgb, mix(horizonSky, haze.rgb * vec3(0.45, 0.50, 0.62), 0.22), waterBand);
     float inx = smoothstep(-0.02, 0.03, uv.x) * smoothstep(-0.02, 0.03, 1.0 - uv.x);
     float iny = smoothstep(-0.02, 0.03, uv.y) * smoothstep(-0.02, 0.03, 1.0 - uv.y);
     float w = clamp(inx * iny, 0.0, 1.0);
@@ -246,11 +260,37 @@ function unprojectCanon(u, v, z) {
   };
 }
 
-function applyWaterContact(u, v, z) {
-  const citadel = smooth01((u - 0.54) / 0.16) * smooth01((v - 0.84) / 0.10);
-  const sent = (1 - smooth01((u - 0.34) / 0.08)) * smooth01((u - 0.00) / 0.04) * smooth01((v - 0.84) / 0.10);
-  const w = Math.min(1, Math.max(citadel, sent) * 0.82);
-  return mix(z, 1.02, w);
+function hash21(x, y) {
+  const s = Math.sin(x * 127.1 + y * 311.7) * 43758.5453;
+  return s - Math.floor(s);
+}
+
+function makeAlphaSampler(tex) {
+  const img = tex && tex.image;
+  if (!img || !img.width) return () => 0;
+  const w = img.width;
+  const h = img.height;
+  const canvas = document.createElement('canvas');
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  if (!ctx) return () => 0;
+  ctx.drawImage(img, 0, 0);
+  const data = ctx.getImageData(0, 0, w, h).data;
+  return (u, v) => {
+    const x = clamp(Math.floor(u * w), 0, w - 1);
+    const y = clamp(Math.floor(v * h), 0, h - 1);
+    return data[(y * w + x) * 4 + 3] / 255;
+  };
+}
+
+function applyWaterContact(u, v, z, occ) {
+  // Only lift water where a landmark actually stands, and only in a thin
+  // footing band — a UV rectangle here becomes a visible shelf in the channel.
+  const foot = smooth01((v - 0.868) / 0.022);
+  const w = Math.min(1, occ * foot * 0.78);
+  const target = mix(1.04, 1.14, smooth01((v - 0.90) / 0.055));
+  return mix(z, target, w);
 }
 
 function colorize(tex, THREE) {
@@ -321,40 +361,66 @@ export function createLivingPosterWorld({ THREE, renderer, container, camera, sc
     return mesh;
   }
 
-  function buildWater() {
-    const segsW = 96;
-    const segsH = 48;
-    const u0 = -U_PAD;
-    const u1 = 1 + U_PAD;
-    const positions = [];
-    const rest = [];
-    const profileT = [];
-    const indices = [];
+  function pushWaterVert(positions, rest, profileT, u, v, z, t) {
+    const p = unprojectCanon(u, v, z);
+    positions.push(p.x, p.y, p.z);
+    rest.push(p.x, p.y, p.z);
+    profileT.push(t);
+  }
 
+  function addWaterGrid(positions, rest, profileT, indices, u0, u1, v0, v1, zFn, segsW, segsH, tBase) {
+    const base = positions.length / 3;
     for (let j = 0; j <= segsH; j++) {
-      const t = j / segsH;
-      const v = V0 + t * (1 - V0);
-      const zLin = mix(Z_FAR, Z_NEAR, t);
+      const tv = j / segsH;
+      const v = mix(v0, v1, tv);
       for (let i = 0; i <= segsW; i++) {
-        const u = mix(u0, u1, i / segsW);
-        const z = applyWaterContact(u, v, zLin);
-        const p = unprojectCanon(u, v, z);
-        positions.push(p.x, p.y, p.z);
-        rest.push(p.x, p.y, p.z);
-        profileT.push(t);
+        const tu = i / segsW;
+        const u = mix(u0, u1, tu);
+        const z = zFn(u, v, tu, tv);
+        pushWaterVert(positions, rest, profileT, u, v, z, mix(tBase, 1, tv));
       }
     }
-
     const cols = segsW + 1;
     for (let j = 0; j < segsH; j++) {
       for (let i = 0; i < segsW; i++) {
-        const a = j * cols + i;
+        const a = base + j * cols + i;
         const b = a + 1;
         const c = a + cols;
         const d = c + 1;
         indices.push(a, c, b, b, c, d);
       }
     }
+  }
+
+  function buildWater() {
+    const segsW = 96;
+    const segsH = 48;
+    const u0 = -GEO_PAD;
+    const u1 = 1 + GEO_PAD;
+    const positions = [];
+    const rest = [];
+    const profileT = [];
+    const indices = [];
+    const citA = makeAlphaSampler(textures.citadelFront);
+    const sentA = makeAlphaSampler(textures.sentinel);
+    const occAt = (u, v) => {
+      let m = 0;
+      for (const du of [-0.014, 0, 0.014]) {
+        for (const dv of [-0.01, 0, 0.01]) {
+          m = Math.max(m, citA(u + du, v + dv), sentA(u + du, v + dv));
+        }
+      }
+      return m;
+    };
+
+    addWaterGrid(positions, rest, profileT, indices, u0, u1, V0, 1, (u, v, tu, tv) => {
+      let zLin = mix(Z_FAR, Z_NEAR, tv);
+      if (tv < 0.10) {
+        const wobble = (hash21(u * 18.0, v * 40.0) - 0.5) * 0.12 * (1 - tv / 0.10);
+        zLin += wobble;
+      }
+      return applyWaterContact(u, v, zLin, occAt(u, v));
+    }, segsW, segsH, 0);
 
     const geo = track(new THREE.BufferGeometry());
     geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
@@ -366,6 +432,8 @@ export function createLivingPosterWorld({ THREE, renderer, container, camera, sc
     const mat = track(createV0WaterMaterial({
       THREE,
       waterTex: textures.ocean,
+      citadelTex: textures.citadelFront,
+      sentinelTex: textures.sentinel,
       canonViewMatrix: canonView,
       canonProjMatrix: canonProj,
       uPad: U_PAD,
