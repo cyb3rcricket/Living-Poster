@@ -1,0 +1,14 @@
+{
+  "method": "low-frequency edge extension + warped original-water stamps + GenerateImage luminance (sides only) + painterly dabs + fBm. Landmark inpaint repaired. Sky card has no ocean band. No mirror/tile.",
+  "atlas": {
+    "interiorMax": 0,
+    "max": 216,
+    "changed": 68422,
+    "uPad": 0.5,
+    "atlas": "2048x1024"
+  },
+  "seaOnly": "reference/experimental/prototype-05/generated/layer-f-water-sea-only.png",
+  "usedPaint": true,
+  "usedIce": true,
+  "usedHaze": true
+}

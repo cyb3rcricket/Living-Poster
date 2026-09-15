@@ -3,6 +3,9 @@ import { Prototype01 } from './prototype01.js';
 import { Prototype02 } from './prototype02.js';
 import { Prototype03 } from './prototype03.js';
 import { Prototype04 } from './prototype04.js';
+import { Prototype05 } from './prototype05.js';
+import { Prototype06 } from './prototype06.js';
+import { LivingPoster } from './livingPoster.js';
 
 // ============================================================================
 // Shared WebGL Setup & Application Controller
@@ -21,10 +24,16 @@ const tabProto01 = document.getElementById('tab-proto-01');
 const tabProto02 = document.getElementById('tab-proto-02');
 const tabProto03 = document.getElementById('tab-proto-03');
 const tabProto04 = document.getElementById('tab-proto-04');
+const tabProto05 = document.getElementById('tab-proto-05');
+const tabProto06 = document.getElementById('tab-proto-06');
+const tabLivingPoster = document.getElementById('tab-living-poster');
 const panelProto01 = document.getElementById('panel-proto-01');
 const panelProto02 = document.getElementById('panel-proto-02');
 const panelProto03 = document.getElementById('panel-proto-03');
 const panelProto04 = document.getElementById('panel-proto-04');
+const panelProto05 = document.getElementById('panel-proto-05');
+const panelProto06 = document.getElementById('panel-proto-06');
+const panelLivingPoster = document.getElementById('panel-living-poster');
 
 // Prototype 04 DOM Elements
 const p4BtnPoster = document.getElementById('p4-btn-poster');
@@ -55,6 +64,106 @@ const p4SliderPushZ = document.getElementById('p4-slider-push-z');
 const p4ValPushZ = document.getElementById('p4-val-push-z');
 const p4SliderLighting = document.getElementById('p4-slider-lighting');
 const p4ValLighting = document.getElementById('p4-val-lighting');
+
+// Prototype 05 DOM Elements
+const p5BtnPoster = document.getElementById('p5-btn-poster');
+const p5BtnCard = document.getElementById('p5-btn-card');
+const p5BtnSlab = document.getElementById('p5-btn-slab');
+const p5BtnStack = document.getElementById('p5-btn-stack');
+const p5BtnOverlay = document.getElementById('p5-btn-overlay');
+const p5BtnWire = document.getElementById('p5-btn-wire');
+const p5BtnFootprint = document.getElementById('p5-btn-footprint');
+const p5BtnProj = document.getElementById('p5-btn-proj');
+const p5BtnProfileDbg = document.getElementById('p5-btn-profiledbg');
+const p5BtnTopoBase = document.getElementById('p5-btn-topo-base');
+const p5BtnH1 = document.getElementById('p5-btn-h1');
+const p5BtnH2 = document.getElementById('p5-btn-h2');
+const p5BtnH3 = document.getElementById('p5-btn-h3');
+const p5BtnH4 = document.getElementById('p5-btn-h4');
+const p5BtnSeaOriginal = document.getElementById('p5-btn-sea-original');
+const p5BtnSeaOnly = document.getElementById('p5-btn-sea-only');
+const p5BtnFp0 = document.getElementById('p5-btn-fp0');
+const p5BtnFp1 = document.getElementById('p5-btn-fp1');
+const p5BtnFp2 = document.getElementById('p5-btn-fp2');
+const p5SliderH1Far = document.getElementById('p5-slider-h1far');
+const p5ValH1Far = document.getElementById('p5-val-h1far');
+const p5SliderCoveStart = document.getElementById('p5-slider-covestart');
+const p5ValCoveStart = document.getElementById('p5-val-covestart');
+const p5SliderCoveFar = document.getElementById('p5-slider-covefar');
+const p5ValCoveFar = document.getElementById('p5-val-covefar');
+const p5SliderCoveVert = document.getElementById('p5-slider-covevert');
+const p5ValCoveVert = document.getElementById('p5-val-covevert');
+const p5SliderH3Split = document.getElementById('p5-slider-h3split');
+const p5ValH3Split = document.getElementById('p5-val-h3split');
+const p5TelTopo = document.getElementById('p5-tel-topo');
+const p5TelSeaSource = document.getElementById('p5-tel-seasource');
+const p5BtnProfLinear = document.getElementById('p5-btn-prof-linear');
+const p5BtnProfSmooth = document.getElementById('p5-btn-prof-smooth');
+const p5BtnProfPower = document.getElementById('p5-btn-prof-power');
+const p5BtnProfHermite = document.getElementById('p5-btn-prof-hermite');
+const p5BtnDepthWrite = document.getElementById('p5-btn-depthwrite');
+const p5BtnFootprintToggle = document.getElementById('p5-btn-footprint-toggle');
+const p5BtnAlive = document.getElementById('p5-btn-alive');
+const p5BtnContact = document.getElementById('p5-btn-contact');
+const p5BtnMotionPointer = document.getElementById('p5-btn-motion-pointer');
+const p5BtnMotionPath = document.getElementById('p5-btn-motion-path');
+const p5BtnFlareMode = document.getElementById('p5-btn-flare-mode');
+const p5SliderZHorizon = document.getElementById('p5-slider-zhorizon');
+const p5ValZHorizon = document.getElementById('p5-val-zhorizon');
+const p5SliderZNear = document.getElementById('p5-slider-znear');
+const p5ValZNear = document.getElementById('p5-val-znear');
+const p5SliderGamma = document.getElementById('p5-slider-gamma');
+const p5ValGamma = document.getElementById('p5-val-gamma');
+const p5SliderTMid = document.getElementById('p5-slider-tmid');
+const p5ValTMid = document.getElementById('p5-val-tmid');
+const p5SliderZMidT = document.getElementById('p5-slider-zmidt');
+const p5ValZMidT = document.getElementById('p5-val-zmidt');
+const p5SliderFeather = document.getElementById('p5-slider-feather');
+const p5ValFeather = document.getElementById('p5-val-feather');
+const p5SliderShiftX = document.getElementById('p5-slider-shift-x');
+const p5ValShiftX = document.getElementById('p5-val-shift-x');
+const p5SliderPushZ = document.getElementById('p5-slider-push-z');
+const p5ValPushZ = document.getElementById('p5-val-push-z');
+const p5TelProfile = document.getElementById('p5-tel-profile');
+const p5TelVerts = document.getElementById('p5-tel-verts');
+const p5TelTris = document.getElementById('p5-tel-tris');
+const p5TelZh = document.getElementById('p5-tel-zh');
+const p5TelZn = document.getElementById('p5-tel-zn');
+const p5TelCam = document.getElementById('p5-tel-cam');
+const p5TelHorizon = document.getElementById('p5-tel-horizon');
+const p5TelPerf = document.getElementById('p5-tel-perf');
+
+const p6BtnEnter = document.getElementById('p6-btn-enter');
+const p6BtnPause = document.getElementById('p6-btn-pause');
+const p6BtnReplay = document.getElementById('p6-btn-replay');
+const p6TelStage = document.getElementById('p6-tel-stage');
+const p6TelTime = document.getElementById('p6-tel-time');
+const p6TelCam = document.getElementById('p6-tel-cam');
+const p6TelRot = document.getElementById('p6-tel-rot');
+const p6TelP03 = document.getElementById('p6-tel-p03');
+const p6TelOwn = document.getElementById('p6-tel-own');
+const p6Hud = document.getElementById('p6-hud');
+const p6HudStage = document.getElementById('p6-hud-stage');
+const p6HudTime = document.getElementById('p6-hud-time');
+const p6HudCam = document.getElementById('p6-hud-cam');
+const p6HudRot = document.getElementById('p6-hud-rot');
+const p6HudP03 = document.getElementById('p6-hud-p03');
+const p6HudCitadel = document.getElementById('p6-hud-citadel');
+const p6HudWater = document.getElementById('p6-hud-water');
+
+const lpBtnStart = document.getElementById('lp-btn-start');
+const lpBtnSkip = document.getElementById('lp-btn-skip');
+const lpBtnReset = document.getElementById('lp-btn-reset');
+const lpBtnHud = document.getElementById('lp-btn-hud');
+const lpBtnQAuto = document.getElementById('lp-btn-q-auto');
+const lpBtnQHigh = document.getElementById('lp-btn-q-high');
+const lpBtnQMedium = document.getElementById('lp-btn-q-medium');
+const lpBtnQLow = document.getElementById('lp-btn-q-low');
+const lpTelPhase = document.getElementById('lp-tel-phase');
+const lpTelPipe = document.getElementById('lp-tel-pipe');
+const lpTelQuality = document.getElementById('lp-tel-quality');
+const lpTelPerf = document.getElementById('lp-tel-perf');
+const lpTelDraws = document.getElementById('lp-tel-draws');
 
 // Prototype 03 DOM Elements
 const p3BadgeStage = document.getElementById('p3-badge-stage');
@@ -164,20 +273,37 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2.0));
 renderer.setSize(container.clientWidth, container.clientHeight, false);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 
+const HOST_PIXEL_RATIO_CAP = 2.0;
+function applyHostRendererScale() {
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, HOST_PIXEL_RATIO_CAP));
+  renderer.setSize(container.clientWidth, container.clientHeight, false);
+}
+
 // Instantiate all four prototypes
 const proto01 = new Prototype01(renderer, container, showToast);
 const proto02 = new Prototype02(renderer, container, showToast);
 const proto03 = new Prototype03(renderer, container, showToast);
 const proto04 = new Prototype04(renderer, container, showToast);
+const proto05 = new Prototype05(renderer, container, showToast);
+const proto06 = new Prototype06(renderer, container, showToast);
+const livingPoster = new LivingPoster(renderer, container, showToast);
+window.__p05 = proto05;
+window.__p06 = proto06;
+window.__livingPoster = livingPoster;
+applyHostRendererScale();
 
-// Active prototype reference ('p1', 'p2', 'p3', or 'p4')
-let activeProtoId = 'p4'; // Default to Prototype 04 for this experiment
+// Active prototype reference ('p1'–'p6' or 'lp'). Default remains Prototype 04.
+let activeProtoId = 'p4';
 let activeProto = proto04;
 
-// Check URL query param ?p=1, ?p=2, ?p=3, or ?p=4
+// Check URL: ?experience=1 is Living Poster V0; ?p=1…?p=6 remain lab prototypes.
 const urlParams = new URLSearchParams(window.location.search);
+const expParam = urlParams.get('experience');
 const pParam = urlParams.get('p');
-if (pParam === '1') {
+if (expParam === '1') {
+  activeProtoId = 'lp';
+  activeProto = livingPoster;
+} else if (pParam === '1') {
   activeProtoId = 'p1';
   activeProto = proto01;
 } else if (pParam === '2') {
@@ -186,9 +312,19 @@ if (pParam === '1') {
 } else if (pParam === '3') {
   activeProtoId = 'p3';
   activeProto = proto03;
+} else if (pParam === '5') {
+  activeProtoId = 'p5';
+  activeProto = proto05;
+} else if (pParam === '6') {
+  activeProtoId = 'p6';
+  activeProto = proto06;
 } else {
   activeProtoId = 'p4';
   activeProto = proto04;
+}
+
+if (activeProtoId === 'lp') {
+  livingPoster.setActive(true);
 }
 
 // Immediately synchronize UI with active prototype
@@ -200,6 +336,9 @@ Promise.all([
   proto02.loadAssets().catch(err => console.error('P02 asset load error:', err)),
   proto03.loadAssets().catch(err => console.error('P03 asset load error:', err)),
   proto04.loadAssets().catch(err => console.error('P04 asset load error:', err)),
+  proto05.loadAssets().catch(err => console.error('P05 asset load error:', err)),
+  proto06.loadAssets().catch(err => console.error('P06 asset load error:', err)),
+  livingPoster.loadAssets().catch(err => console.error('LivingPoster asset load error:', err)),
 ]).then(() => {
   console.log('All prototype assets loaded successfully.');
   updateActiveUI();
@@ -211,15 +350,37 @@ Promise.all([
 // ============================================================================
 function switchPrototype(id) {
   if (activeProtoId === id) return;
+  const previousId = activeProtoId;
   activeProtoId = id;
   if (id === 'p1') activeProto = proto01;
   else if (id === 'p2') activeProto = proto02;
   else if (id === 'p3') activeProto = proto03;
+  else if (id === 'p5') activeProto = proto05;
+  else if (id === 'p6') activeProto = proto06;
+  else if (id === 'lp') activeProto = livingPoster;
   else activeProto = proto04;
+
+  if (previousId === 'lp') {
+    livingPoster.setActive(false);
+    applyHostRendererScale();
+  }
+
+  if (id === 'lp') {
+    livingPoster.setActive(true);
+    livingPoster.onResize(container.clientWidth, container.clientHeight);
+  } else if (id === 'p6') {
+    proto06.onResize(container.clientWidth, container.clientHeight);
+  }
 
   // Update URL without page reload
   const newUrl = new URL(window.location.href);
-  newUrl.searchParams.set('p', id.replace('p', ''));
+  if (id === 'lp') {
+    newUrl.searchParams.delete('p');
+    newUrl.searchParams.set('experience', '1');
+  } else {
+    newUrl.searchParams.delete('experience');
+    newUrl.searchParams.set('p', id.replace('p', ''));
+  }
   window.history.replaceState({}, '', newUrl);
 
   updateActiveUI();
@@ -228,6 +389,9 @@ function switchPrototype(id) {
     p2: 'Switched to Prototype 02: Proxies',
     p3: 'Switched to Prototype 03: Invisible Handoff',
     p4: 'Switched to Prototype 04: Citadel Volumetric Reconstruction',
+    p5: 'Switched to Prototype 05: Painted Ocean Spatial Reconstruction',
+    p6: 'Switched to Prototype 06: First Controlled Journey',
+    lp: 'Switched to Living Poster V0',
   };
   showToast(names[id] || id);
 }
@@ -237,24 +401,45 @@ function updateActiveUI() {
   const isP2 = activeProtoId === 'p2';
   const isP3 = activeProtoId === 'p3';
   const isP4 = activeProtoId === 'p4';
+  const isP5 = activeProtoId === 'p5';
+  const isP6 = activeProtoId === 'p6';
+  const isLP = activeProtoId === 'lp';
 
   tabProto01.classList.toggle('active', isP1);
   tabProto02.classList.toggle('active', isP2);
   tabProto03.classList.toggle('active', isP3);
   tabProto04.classList.toggle('active', isP4);
+  tabProto05.classList.toggle('active', isP5);
+  tabProto06.classList.toggle('active', isP6);
+  tabLivingPoster.classList.toggle('active', isLP);
 
   panelProto01.classList.toggle('panel-hidden', !isP1);
   panelProto02.classList.toggle('panel-hidden', !isP2);
   panelProto03.classList.toggle('panel-hidden', !isP3);
   panelProto04.classList.toggle('panel-hidden', !isP4);
+  panelProto05.classList.toggle('panel-hidden', !isP5);
+  panelProto06.classList.toggle('panel-hidden', !isP6);
+  panelLivingPoster.classList.toggle('panel-hidden', !isLP);
+  p6Hud.classList.toggle('panel-hidden', !isP6 || !proto06.state.hudVisible);
 
-  if (isP1) devHeaderTitle.textContent = 'PROTOTYPE 01 • DEPTH AWAKENING';
+  if (isLP) devHeaderTitle.textContent = 'LIVING POSTER V0';
+  else if (isP1) devHeaderTitle.textContent = 'PROTOTYPE 01 • DEPTH AWAKENING';
   else if (isP2) devHeaderTitle.textContent = 'PROTOTYPE 02 • PROXY RECONSTRUCTION';
   else if (isP3) devHeaderTitle.textContent = 'PROTOTYPE 03 • INVISIBLE HANDOFF';
+  else if (isP5) devHeaderTitle.textContent = 'PROTOTYPE 05 • PAINTED OCEAN SPATIAL RECONSTRUCTION';
+  else if (isP6) devHeaderTitle.textContent = 'PROTOTYPE 06 • FIRST CONTROLLED JOURNEY';
   else devHeaderTitle.textContent = 'PROTOTYPE 04 • CITADEL VOLUMETRIC RECONSTRUCTION';
 
   // Manage ENTER overlay
-  if (isP3 && proto03.state.masterProgress <= 0.0001 && !proto03.state.isPlaying) {
+  if (isLP) {
+    const st = livingPoster.getState();
+    const showEnter = st.phase === 'POSTER' && !st.exploring;
+    enterOverlay.classList.toggle('overlay-state-hidden', !showEnter);
+    enterOverlay.classList.toggle('overlay-state-visible', showEnter);
+  } else if (isP6 && proto06.state.elapsed <= 0.0001 && !proto06.state.playing) {
+    enterOverlay.classList.remove('overlay-state-hidden');
+    enterOverlay.classList.add('overlay-state-visible');
+  } else if (isP3 && proto03.state.masterProgress <= 0.0001 && !proto03.state.isPlaying) {
     enterOverlay.classList.remove('overlay-state-hidden');
     enterOverlay.classList.add('overlay-state-visible');
   } else if (isP1 && !proto01.state.isAwakened && !proto01.state.isTransitioning) {
@@ -274,7 +459,15 @@ let isUserDraggingP3Slider = false;
 
 function initPrototype03Events() {
   enterBtn.addEventListener('click', () => {
-    if (activeProtoId === 'p3') {
+    if (activeProtoId === 'lp') {
+      livingPoster.startExperience();
+      enterOverlay.classList.remove('overlay-state-visible');
+      enterOverlay.classList.add('overlay-state-hidden');
+    } else if (activeProtoId === 'p6') {
+      proto06.startJourney();
+      enterOverlay.classList.remove('overlay-state-visible');
+      enterOverlay.classList.add('overlay-state-hidden');
+    } else if (activeProtoId === 'p3') {
       proto03.startAwakening();
       enterOverlay.classList.remove('overlay-state-visible');
       enterOverlay.classList.add('overlay-state-hidden');
@@ -729,14 +922,366 @@ function initPrototype04Events() {
   });
 }
 
+function updateP5ComparisonButtons(mode) {
+  p5BtnPoster.classList.toggle('active', mode === 'poster');
+  p5BtnCard.classList.toggle('active', mode === 'card');
+  p5BtnSlab.classList.toggle('active', mode === 'slab' || mode === 'h1' || mode === 'h2' || mode === 'h3' || mode === 'h4');
+  p5BtnStack.classList.toggle('active', mode === 'stack');
+  p5BtnOverlay.classList.toggle('active', mode === 'overlay');
+  p5BtnWire.classList.toggle('active', mode === 'wireframe');
+  p5BtnFootprint.classList.toggle('active', mode === 'footprint');
+  p5BtnProj.classList.toggle('active', mode === 'projection');
+  p5BtnProfileDbg.classList.toggle('active', mode === 'profile');
+  const topo = proto05.config.topology;
+  p5BtnTopoBase.classList.toggle('active', topo === 'baseline' && (mode === 'slab' || mode === 'wireframe' || mode === 'footprint' || mode === 'projection' || mode === 'profile' || mode === 'overlay'));
+  p5BtnH1.classList.toggle('active', mode === 'h1' || (topo === 'h1' && mode !== 'poster' && mode !== 'card' && mode !== 'stack'));
+  p5BtnH2.classList.toggle('active', mode === 'h2' || (topo === 'h2' && mode !== 'poster' && mode !== 'card' && mode !== 'stack'));
+  p5BtnH3.classList.toggle('active', mode === 'h3' || (topo === 'h3' && mode !== 'poster' && mode !== 'card' && mode !== 'stack'));
+  p5BtnH4.classList.toggle('active', mode === 'h4' || (topo === 'h4' && mode !== 'poster' && mode !== 'card' && mode !== 'stack'));
+  if (mode === 'slab') {
+    p5BtnH1.classList.remove('active');
+    p5BtnH2.classList.remove('active');
+    p5BtnH3.classList.remove('active');
+    p5BtnH4.classList.remove('active');
+    p5BtnTopoBase.classList.add('active');
+    p5BtnSlab.classList.add('active');
+  }
+}
+
+function updateP5SeaSourceButtons(source) {
+  const seaOnly = source === 'sea-only';
+  p5BtnSeaOriginal.classList.toggle('active', !seaOnly);
+  p5BtnSeaOnly.classList.toggle('active', seaOnly);
+}
+
+function updateP5FootprintButtons(mode) {
+  p5BtnFp0.classList.toggle('active', mode === 0);
+  p5BtnFp1.classList.toggle('active', mode === 1);
+  p5BtnFp2.classList.toggle('active', mode === 2);
+}
+
+function updateP5ProfileButtons(profile) {
+  p5BtnProfLinear.classList.toggle('active', profile === 'linear');
+  p5BtnProfSmooth.classList.toggle('active', profile === 'smooth');
+  p5BtnProfPower.classList.toggle('active', profile === 'power');
+  p5BtnProfHermite.classList.toggle('active', profile === 'hermite');
+}
+
+function updateP5TelemetryUI() {
+  const telem = proto05.state.telemetry;
+  p5TelProfile.textContent = String(telem.profile || proto05.config.profile).toUpperCase();
+  p5TelTopo.textContent = String(telem.topology || proto05.config.topology).toUpperCase();
+  p5TelSeaSource.textContent = String(telem.seaSource || proto05.config.seaSource).toUpperCase();
+  p5TelVerts.textContent = `${telem.waterVerts}`;
+  p5TelTris.textContent = `${telem.waterTris}`;
+  p5TelZh.textContent = Number(telem.zHorizon).toFixed(2);
+  p5TelZn.textContent = Number(telem.zNear).toFixed(2);
+  p5TelCam.textContent = `X: ${telem.camX.toFixed(2)} | Y: ${telem.camY.toFixed(2)} | Z: ${telem.camZ.toFixed(2)} | Yaw: ${telem.camYawDeg.toFixed(1)}°`;
+  const hPy = Number(telem.horizonPy);
+  p5TelHorizon.textContent = `${hPy.toFixed(3)}  (${(hPy * 1024).toFixed(1)} px)`;
+  p5TelPerf.textContent = `${proto05.state.fps} fps (${proto05.state.frameTimeMs.toFixed(1)} ms) | ${telem.drawCalls} draw calls`;
+}
+
+function initPrototype05Events() {
+  p5BtnTopoBase.addEventListener('click', () => {
+    proto05.setTopology('baseline');
+    updateP5ComparisonButtons('slab');
+  });
+  p5BtnH1.addEventListener('click', () => {
+    proto05.setTopology('h1');
+    updateP5ComparisonButtons('h1');
+    updateP5SeaSourceButtons(proto05.config.seaSource);
+  });
+  p5BtnH2.addEventListener('click', () => {
+    proto05.setTopology('h2');
+    updateP5ComparisonButtons('h2');
+  });
+  p5BtnH3.addEventListener('click', () => {
+    proto05.setTopology('h3');
+    updateP5ComparisonButtons('h3');
+  });
+  p5BtnH4.addEventListener('click', () => {
+    proto05.setTopology('h4');
+    updateP5ComparisonButtons('h4');
+  });
+
+  p5BtnSeaOriginal.addEventListener('click', () => {
+    proto05.setSeaSource('original');
+    updateP5SeaSourceButtons('original');
+  });
+  p5BtnSeaOnly.addEventListener('click', () => {
+    proto05.setSeaSource('sea-only');
+    updateP5SeaSourceButtons('sea-only');
+  });
+
+  p5BtnFp0.addEventListener('click', () => { proto05.setFootprintMode(0); updateP5FootprintButtons(0); });
+  p5BtnFp1.addEventListener('click', () => { proto05.setFootprintMode(1); updateP5FootprintButtons(1); });
+  p5BtnFp2.addEventListener('click', () => { proto05.setFootprintMode(2); updateP5FootprintButtons(2); });
+
+  p5SliderH1Far.addEventListener('input', (e) => {
+    proto05.config.h1FarZ = parseFloat(e.target.value);
+    p5ValH1Far.textContent = proto05.config.h1FarZ.toFixed(2);
+    if (proto05.config.topology === 'h1') proto05.rebuildWater();
+  });
+  p5SliderCoveStart.addEventListener('input', (e) => {
+    proto05.config.coveStart = parseFloat(e.target.value);
+    p5ValCoveStart.textContent = proto05.config.coveStart.toFixed(2);
+    if (proto05.config.topology === 'h2') proto05.rebuildWater();
+  });
+  p5SliderCoveFar.addEventListener('input', (e) => {
+    const val = parseFloat(e.target.value);
+    proto05.config.coveFarZ = val;
+    proto05.config.h3FarZ = val;
+    p5ValCoveFar.textContent = val.toFixed(2);
+    if (proto05.config.topology === 'h2' || proto05.config.topology === 'h3') proto05.rebuildWater();
+  });
+  p5SliderCoveVert.addEventListener('input', (e) => {
+    proto05.config.coveVerticality = parseFloat(e.target.value);
+    p5ValCoveVert.textContent = proto05.config.coveVerticality.toFixed(2);
+    if (proto05.config.topology === 'h2') proto05.rebuildWater();
+  });
+  p5SliderH3Split.addEventListener('input', (e) => {
+    proto05.config.h3Split = parseFloat(e.target.value);
+    p5ValH3Split.textContent = proto05.config.h3Split.toFixed(2);
+    if (proto05.config.topology === 'h3') proto05.rebuildWater();
+  });
+
+  const modeMap = {
+    poster: p5BtnPoster,
+    card: p5BtnCard,
+    slab: p5BtnSlab,
+    stack: p5BtnStack,
+    overlay: p5BtnOverlay,
+    wireframe: p5BtnWire,
+    footprint: p5BtnFootprint,
+    projection: p5BtnProj,
+    profile: p5BtnProfileDbg,
+  };
+  Object.entries(modeMap).forEach(([mode, btn]) => {
+    btn.addEventListener('click', () => {
+      proto05.setComparisonMode(mode);
+      updateP5ComparisonButtons(mode);
+    });
+  });
+
+  const profMap = {
+    linear: p5BtnProfLinear,
+    smooth: p5BtnProfSmooth,
+    power: p5BtnProfPower,
+    hermite: p5BtnProfHermite,
+  };
+  Object.entries(profMap).forEach(([id, btn]) => {
+    btn.addEventListener('click', () => {
+      proto05.setProfile(id);
+      updateP5ProfileButtons(id);
+    });
+  });
+
+  p5BtnDepthWrite.addEventListener('click', () => {
+    const on = proto05.toggleDepthWrite();
+    p5BtnDepthWrite.classList.toggle('active', on);
+    p5BtnDepthWrite.textContent = on ? 'DepthWrite ON' : 'DepthWrite OFF';
+  });
+
+  p5BtnFootprintToggle.addEventListener('click', () => {
+    proto05.config.footprintOn = !proto05.config.footprintOn;
+    proto05.syncWaterUniforms();
+    p5BtnFootprintToggle.classList.toggle('active', proto05.config.footprintOn);
+    p5BtnFootprintToggle.textContent = proto05.config.footprintOn ? 'Footprint ON' : 'Footprint OFF';
+    showToast(proto05.config.footprintOn ? 'Footprint Reject: ON' : 'Footprint Reject: OFF');
+  });
+
+  p5BtnAlive.addEventListener('click', () => {
+    proto05.config.alive = !proto05.config.alive;
+    proto05.syncWaterUniforms();
+    p5BtnAlive.classList.toggle('active', proto05.config.alive);
+    p5BtnAlive.textContent = proto05.config.alive ? 'Alive ON' : 'Alive OFF';
+    showToast(proto05.config.alive ? 'Alive Motion: ON (≤2px warp)' : 'Alive Motion: OFF');
+  });
+
+  p5BtnContact.addEventListener('click', () => {
+    proto05.config.contactCorrection = !proto05.config.contactCorrection;
+    proto05.rebuildWater();
+    p5BtnContact.classList.toggle('active', proto05.config.contactCorrection);
+    p5BtnContact.textContent = proto05.config.contactCorrection ? 'Contact ON' : 'Contact OFF';
+    showToast(proto05.config.contactCorrection ? 'Citadel Waterline Correction: ON' : 'Citadel Waterline Correction: OFF');
+  });
+
+  p5BtnMotionPointer.addEventListener('click', () => {
+    proto05.config.scriptedSweep = false;
+    proto05.config.parallaxEnabled = true;
+    proto05.config.freezeCamera = false;
+    p5BtnMotionPointer.classList.add('active');
+    p5BtnMotionPath.classList.remove('active');
+    showToast('Motion: Pointer (Manual)');
+  });
+
+  p5BtnMotionPath.addEventListener('click', () => {
+    const on = proto05.toggleScriptedSweep();
+    p5BtnMotionPath.classList.toggle('active', on);
+    p5BtnMotionPointer.classList.toggle('active', !on);
+  });
+
+  p5BtnFlareMode.addEventListener('click', () => {
+    const mode = proto05.toggleFlareMode();
+    p5BtnFlareMode.textContent = mode === 'spire' ? 'Flare: SPIRE-LOCKED' : 'Flare: SKY-LOCKED';
+  });
+
+  p5SliderZHorizon.addEventListener('input', (e) => {
+    const val = parseFloat(e.target.value);
+    proto05.setHorizonNear(val, proto05.config.zNear, true);
+    p5ValZHorizon.textContent = val.toFixed(2);
+  });
+
+  p5SliderZNear.addEventListener('input', (e) => {
+    const val = parseFloat(e.target.value);
+    proto05.setHorizonNear(proto05.config.zHorizon, val, true);
+    p5ValZNear.textContent = val.toFixed(2);
+  });
+
+  p5SliderGamma.addEventListener('input', (e) => {
+    proto05.config.gamma = parseFloat(e.target.value);
+    p5ValGamma.textContent = proto05.config.gamma.toFixed(2);
+    if (proto05.config.profile === 'power') proto05.rebuildWater();
+  });
+
+  p5SliderTMid.addEventListener('input', (e) => {
+    proto05.config.tMid = parseFloat(e.target.value);
+    p5ValTMid.textContent = proto05.config.tMid.toFixed(2);
+    if (proto05.config.profile === 'hermite') proto05.rebuildWater();
+  });
+
+  p5SliderZMidT.addEventListener('input', (e) => {
+    proto05.config.zMidT = parseFloat(e.target.value);
+    p5ValZMidT.textContent = proto05.config.zMidT.toFixed(2);
+    if (proto05.config.profile === 'hermite') proto05.rebuildWater();
+  });
+
+  p5SliderFeather.addEventListener('input', (e) => {
+    const val = parseFloat(e.target.value);
+    proto05.setFeather(val);
+    p5ValFeather.textContent = val.toFixed(1);
+  });
+
+  p5SliderShiftX.addEventListener('input', (e) => {
+    const val = parseFloat(e.target.value);
+    proto05.config.parallaxShiftX = val;
+    p5ValShiftX.textContent = val.toFixed(3);
+  });
+
+  p5SliderPushZ.addEventListener('input', (e) => {
+    const val = parseFloat(e.target.value);
+    proto05.config.cameraPush = val;
+    p5ValPushZ.textContent = val.toFixed(3);
+  });
+}
+
+function updateP6TelemetryUI() {
+  const telem = proto06.getTelemetry();
+  const stage = telem.stage;
+  p6TelStage.textContent = stage;
+  p6TelTime.textContent = `${telem.elapsed.toFixed(2)} s`;
+  p6TelCam.textContent = `X ${telem.camX.toFixed(3)} · Y ${telem.camY.toFixed(3)} · Z ${telem.camZ.toFixed(3)}`;
+  p6TelRot.textContent = `${telem.yawDeg.toFixed(2)}° / ${telem.pitchDeg.toFixed(2)}°`;
+  p6TelP03.textContent = telem.p03Progress.toFixed(2);
+  p6TelOwn.textContent = `Citadel ${(telem.citadelOwned * 100).toFixed(0)}% · Water ${(telem.waterOwned * 100).toFixed(0)}%`;
+  p6HudStage.textContent = stage;
+  p6HudTime.textContent = telem.elapsed.toFixed(2);
+  p6HudCam.textContent = `${telem.camX.toFixed(3)} ${telem.camY.toFixed(3)} ${telem.camZ.toFixed(3)}`;
+  p6HudRot.textContent = `${telem.yawDeg.toFixed(2)}° ${telem.pitchDeg.toFixed(2)}°`;
+  p6HudP03.textContent = telem.p03Progress.toFixed(2);
+  p6HudCitadel.textContent = `${(telem.citadelOwned * 100).toFixed(0)}%`;
+  p6HudWater.textContent = `${(telem.waterOwned * 100).toFixed(0)}%`;
+  p6BtnPause.textContent = proto06.state.playing ? 'PAUSE' : (proto06.state.paused ? 'RESUME' : 'PAUSE');
+}
+
+function hideP6EnterOverlay() {
+  enterOverlay.classList.remove('overlay-state-visible');
+  enterOverlay.classList.add('overlay-state-hidden');
+}
+
+function initPrototype06Events() {
+  p6BtnEnter.addEventListener('click', () => {
+    proto06.startJourney();
+    hideP6EnterOverlay();
+  });
+  p6BtnPause.addEventListener('click', () => {
+    proto06.togglePause();
+  });
+  p6BtnReplay.addEventListener('click', () => {
+    proto06.replay();
+    hideP6EnterOverlay();
+  });
+  document.querySelectorAll('.p6-stage-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      proto06.freezeStage(btn.dataset.stage);
+      hideP6EnterOverlay();
+      document.querySelectorAll('.p6-stage-btn').forEach((b) => b.classList.toggle('active', b === btn));
+    });
+  });
+}
+
+function updateLpQualityButtons(level) {
+  lpBtnQAuto.classList.toggle('active', level === 'auto');
+  lpBtnQHigh.classList.toggle('active', level === 'high');
+  lpBtnQMedium.classList.toggle('active', level === 'medium');
+  lpBtnQLow.classList.toggle('active', level === 'low');
+}
+
+function updateLpTelemetryUI() {
+  const st = livingPoster.getState();
+  const s = livingPoster.getPerfStats();
+  const applied = s.appliedLevel ? String(s.appliedLevel).toUpperCase() : 'MEDIUM';
+  lpTelPhase.textContent = st.phase;
+  lpTelPipe.textContent = s.pipeline || '—';
+  lpTelQuality.textContent = `${String(s.level || 'auto').toUpperCase()} / ${applied}`;
+  lpTelPerf.textContent = `${Number(s.fps).toFixed(0)} fps (${Number(s.frameMs).toFixed(1)} ms)  pr ${Number(s.pixelRatio).toFixed(2)}×${Number(s.renderScale).toFixed(2)}`;
+  lpTelDraws.textContent = `${s.drawCalls || 0} / ${s.triangles || 0}`;
+}
+
+function initLivingPosterEvents() {
+  lpBtnStart.addEventListener('click', () => {
+    livingPoster.resetToPoster();
+    livingPoster.startExperience();
+    hideP6EnterOverlay();
+  });
+  lpBtnSkip.addEventListener('click', () => {
+    livingPoster.skipToArrival();
+    hideP6EnterOverlay();
+  });
+  lpBtnReset.addEventListener('click', () => {
+    livingPoster.resetToPoster();
+    updateActiveUI();
+  });
+  lpBtnHud.addEventListener('click', () => {
+    const on = livingPoster.togglePerfHud();
+    lpBtnHud.classList.toggle('active', on);
+  });
+  const qualityMap = {
+    auto: lpBtnQAuto,
+    high: lpBtnQHigh,
+    medium: lpBtnQMedium,
+    low: lpBtnQLow,
+  };
+  Object.entries(qualityMap).forEach(([level, btn]) => {
+    btn.addEventListener('click', () => {
+      livingPoster.setQuality(level);
+      updateLpQualityButtons(level);
+    });
+  });
+}
+
 // ============================================================================
 // Global Interaction & Keyboard Routing
 // ============================================================================
 function initGlobalEvents() {
+  tabLivingPoster.addEventListener('click', () => switchPrototype('lp'));
   tabProto01.addEventListener('click', () => switchPrototype('p1'));
   tabProto02.addEventListener('click', () => switchPrototype('p2'));
   tabProto03.addEventListener('click', () => switchPrototype('p3'));
   tabProto04.addEventListener('click', () => switchPrototype('p4'));
+  tabProto05.addEventListener('click', () => switchPrototype('p5'));
+  tabProto06.addEventListener('click', () => switchPrototype('p6'));
 
   devToggleBtn.addEventListener('click', () => {
     devPanel.classList.toggle('dev-panel-collapsed');
@@ -752,7 +1297,13 @@ function initGlobalEvents() {
     const x = ((e.clientX - rect.left) / rect.width) * 2.0 - 1.0;
     const y = ((e.clientY - rect.top) / rect.height) * 2.0 - 1.0;
 
-    if (activeProtoId === 'p4') {
+    if (activeProtoId === 'lp') {
+      livingPoster.onPointerMove(x, y);
+    } else if (activeProtoId === 'p6') {
+      proto06.onPointerMove(x, y);
+    } else if (activeProtoId === 'p5') {
+      proto05.onPointerMove(x, y);
+    } else if (activeProtoId === 'p4') {
       proto04.onPointerMove(x, y);
     } else if (activeProtoId === 'p3') {
       proto03.onPointerMove(x, y);
@@ -780,10 +1331,28 @@ function initGlobalEvents() {
     else if (e.key === '4') {
       switchPrototype('p4');
     }
+    else if (e.key === '5') {
+      switchPrototype('p5');
+    }
+    else if (e.key === '6') {
+      switchPrototype('p6');
+    }
     // [Space]: Contextual Action
     else if (e.code === 'Space') {
       e.preventDefault();
-      if (activeProtoId === 'p4') {
+      if (activeProtoId === 'lp') {
+        const st = livingPoster.getState();
+        if (st.phase === 'POSTER' && !st.exploring) {
+          livingPoster.startExperience();
+          hideP6EnterOverlay();
+        }
+      } else if (activeProtoId === 'p6') {
+        proto06.togglePause();
+      } else if (activeProtoId === 'p5') {
+        const nextMode = proto05.config.comparisonMode === 'card' ? 'slab' : 'card';
+        proto05.setComparisonMode(nextMode);
+        updateP5ComparisonButtons(nextMode);
+      } else if (activeProtoId === 'p4') {
         const nextMode = proto04.config.comparisonMode === 'proxy' ? 'volume' : 'proxy';
         proto04.setComparisonMode(nextMode);
         updateP4ComparisonButtons(nextMode);
@@ -800,7 +1369,13 @@ function initGlobalEvents() {
     }
     // [R]: Replay (P03, P01)
     else if (e.key === 'r' || e.key === 'R') {
-      if (activeProtoId === 'p3') {
+      if (activeProtoId === 'lp') {
+        livingPoster.restart();
+        hideP6EnterOverlay();
+      } else if (activeProtoId === 'p6') {
+        proto06.replay();
+        hideP6EnterOverlay();
+      } else if (activeProtoId === 'p3') {
         proto03.replay();
         enterOverlay.classList.remove('overlay-state-visible');
         enterOverlay.classList.add('overlay-state-hidden');
@@ -819,7 +1394,10 @@ function initGlobalEvents() {
     }
     // [D]: Toggle Diagnostic / Comparison Mode
     else if (e.key === 'd' || e.key === 'D') {
-      if (activeProtoId === 'p4') {
+      if (activeProtoId === 'p5') {
+        const nextMode = proto05.cycleComparisonMode();
+        updateP5ComparisonButtons(nextMode);
+      } else if (activeProtoId === 'p4') {
         const modes = ['volume', 'proxy', 'overlay', 'silhouette', 'wireframe', 'generated'];
         const curIdx = modes.indexOf(proto04.config.comparisonMode);
         const nextMode = modes[(curIdx + 1) % modes.length];
@@ -842,7 +1420,13 @@ function initGlobalEvents() {
     }
     // [P]: Toggle Parallax
     else if (e.key === 'p' || e.key === 'P') {
-      if (activeProtoId === 'p4') {
+      if (activeProtoId === 'lp') {
+        const on = livingPoster.togglePerfHud();
+        lpBtnHud.classList.toggle('active', on);
+      } else if (activeProtoId === 'p5') {
+        proto05.config.parallaxEnabled = !proto05.config.parallaxEnabled;
+        showToast(proto05.config.parallaxEnabled ? 'Parallax: ENABLED' : 'Parallax: LOCKED');
+      } else if (activeProtoId === 'p4') {
         proto04.config.parallaxEnabled = !proto04.config.parallaxEnabled;
         showToast(proto04.config.parallaxEnabled ? 'Parallax: ENABLED' : 'Parallax: LOCKED');
       } else if (activeProtoId === 'p2') {
@@ -856,7 +1440,11 @@ function initGlobalEvents() {
     }
     // [S]: Toggle Scripted Sweep
     else if (e.key === 's' || e.key === 'S') {
-      if (activeProtoId === 'p4') {
+      if (activeProtoId === 'p5') {
+        const isSweep = proto05.toggleScriptedSweep();
+        p5BtnMotionPath.classList.toggle('active', isSweep);
+        p5BtnMotionPointer.classList.toggle('active', !isSweep);
+      } else if (activeProtoId === 'p4') {
         const isSweep = proto04.toggleScriptedSweep();
         p4BtnMotionSweep.classList.toggle('active', isSweep);
         p4BtnMotionPointer.classList.toggle('active', !isSweep);
@@ -868,7 +1456,12 @@ function initGlobalEvents() {
     }
     // [F]: Toggle Flare Mode
     else if (e.key === 'f' || e.key === 'F') {
-      if (activeProtoId === 'p4') {
+      if (activeProtoId === 'p5') {
+        const mode = proto05.toggleFlareMode();
+        p5BtnFlareMode.textContent = mode === 'spire'
+          ? 'Flare: SPIRE-LOCKED'
+          : 'Flare: SKY-LOCKED';
+      } else if (activeProtoId === 'p4') {
         const mode = proto04.toggleFlareMode();
         p4BtnFlareMode.textContent = mode === 'spire'
           ? 'Flare: SPIRE-LOCKED'
@@ -882,7 +1475,11 @@ function initGlobalEvents() {
     }
     // [W]: Toggle Wireframe Mode (P04)
     else if (e.key === 'w' || e.key === 'W') {
-      if (activeProtoId === 'p4') {
+      if (activeProtoId === 'p5') {
+        const nextMode = proto05.config.comparisonMode === 'wireframe' ? 'slab' : 'wireframe';
+        proto05.setComparisonMode(nextMode);
+        updateP5ComparisonButtons(nextMode);
+      } else if (activeProtoId === 'p4') {
         const nextMode = proto04.config.comparisonMode === 'wireframe' ? 'volume' : 'wireframe';
         proto04.setComparisonMode(nextMode);
         updateP4ComparisonButtons(nextMode);
@@ -912,6 +1509,10 @@ function initGlobalEvents() {
     }
     // [H]: Hide / Show Dev Panel
     else if (e.key === 'h' || e.key === 'H') {
+      if (activeProtoId === 'p6') {
+        proto06.state.hudVisible = !proto06.state.hudVisible;
+        p6Hud.classList.toggle('panel-hidden', !proto06.state.hudVisible);
+      }
       devPanel.classList.toggle('dev-panel-hidden');
     }
   });
@@ -920,11 +1521,20 @@ function initGlobalEvents() {
 function handleResize() {
   const width = container.clientWidth;
   const height = container.clientHeight;
-  renderer.setSize(width, height, false);
+  if (activeProtoId === 'lp') {
+    if (livingPoster.quality && typeof livingPoster.quality.apply === 'function') {
+      livingPoster.quality.apply();
+    }
+  } else {
+    applyHostRendererScale();
+  }
   proto01.onResize(width, height);
   proto02.onResize(width, height);
   proto03.onResize(width, height);
   proto04.onResize(width, height);
+  proto05.onResize(width, height);
+  proto06.onResize(width, height);
+  livingPoster.onResize(width, height);
 }
 
 // Initialize all event bindings
@@ -932,6 +1542,9 @@ initPrototype01Events();
 initPrototype02Events();
 initPrototype03Events();
 initPrototype04Events();
+initPrototype05Events();
+initPrototype06Events();
+initLivingPosterEvents();
 initGlobalEvents();
 
 // ============================================================================
@@ -941,7 +1554,16 @@ function animate() {
   requestAnimationFrame(animate);
   const now = performance.now();
 
-  if (activeProtoId === 'p4') {
+  if (activeProtoId === 'lp') {
+    livingPoster.update(now);
+    updateLpTelemetryUI();
+  } else if (activeProtoId === 'p6') {
+    proto06.update(now);
+    updateP6TelemetryUI();
+  } else if (activeProtoId === 'p5') {
+    proto05.update(now);
+    updateP5TelemetryUI();
+  } else if (activeProtoId === 'p4') {
     proto04.update(now);
     updateP4TelemetryUI();
   } else if (activeProtoId === 'p3') {

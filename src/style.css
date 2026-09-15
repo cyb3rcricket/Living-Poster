@@ -111,6 +111,10 @@ html, body {
   right: 16px;
   width: 320px;
   max-width: calc(100vw - 32px);
+  max-height: min(92vh, 820px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   background: var(--panel-bg);
   border: 1px solid var(--panel-border);
   border-radius: 4px;
@@ -161,6 +165,7 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  overflow-y: auto;
 }
 
 .dev-row {
@@ -231,18 +236,19 @@ button.mode-btn.active, button.tech-btn.active, button.action-btn.active {
 
 .proto-tabs {
   display: flex;
+  flex-wrap: wrap;
   gap: 4px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding-bottom: 8px;
 }
 
 .proto-tab-btn {
-  flex: 1;
+  flex: 1 1 52px;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.12);
   color: var(--text-muted);
-  padding: 6px 4px;
-  font-size: 10px;
+  padding: 6px 2px;
+  font-size: 9px;
   font-weight: 500;
   border-radius: 2px;
   cursor: pointer;
@@ -259,6 +265,20 @@ button.mode-btn.active, button.tech-btn.active, button.action-btn.active {
   border-color: var(--accent-magenta);
   color: #fff;
   font-weight: 600;
+}
+
+.proto-tab-btn.lp-experience-tab {
+  flex: 1 1 100%;
+  letter-spacing: 0.14em;
+  font-size: 10px;
+  color: var(--accent-gold);
+  border-color: rgba(255, 229, 128, 0.28);
+}
+
+.proto-tab-btn.lp-experience-tab.active {
+  background: rgba(255, 229, 128, 0.18);
+  border-color: var(--accent-gold);
+  color: #fff;
 }
 
 .proto-subpanel {
@@ -451,4 +471,32 @@ button.layer-toggle-btn.active {
 #status-toast.toast-hidden {
   opacity: 0;
   transform: translate(-50%, -10px);
+}
+
+#p6-hud {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  z-index: 25;
+  background: rgba(8, 12, 28, 0.78);
+  border: 1px solid rgba(60, 165, 196, 0.35);
+  color: var(--text-primary);
+  font-size: 11px;
+  line-height: 1.45;
+  letter-spacing: 0.04em;
+  padding: 8px 10px;
+  border-radius: 4px;
+  pointer-events: none;
+  min-width: 210px;
+}
+
+#p6-hud.panel-hidden {
+  display: none;
+}
+
+.hint-text {
+  color: var(--text-muted);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
 }
