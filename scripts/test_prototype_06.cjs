@@ -40,7 +40,17 @@ async function main() {
   const browser = await puppeteer.launch({
     executablePath: findChrome(),
     headless: 'new',
-    args: ['--no-sandbox', '--disable-gpu', '--window-size=1100,1100'],
+    args: [
+      '--use-gl=angle',
+      '--use-angle=gl',
+      '--ignore-gpu-blocklist',
+      '--enable-webgl',
+      '--window-size=1024,1024',
+      '--no-sandbox',
+      '--disable-dev-shm-usage',
+      `--user-data-dir=/tmp/chrome-test-p06-${Date.now()}`,
+    ],
+    defaultViewport: { width: 1024, height: 1024 },
   });
   const page = await browser.newPage();
   await page.setViewport({ width: 1024, height: 1024, deviceScaleFactor: 1 });

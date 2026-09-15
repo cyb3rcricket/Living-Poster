@@ -351,6 +351,7 @@ export class Prototype06 {
     this.state.paused = pause;
     if (!pause) this.state.origin = performance.now() - this.state.elapsed * 1000;
     this.state.stage = stageAt(this.state.elapsed);
+    this.update(performance.now());
   }
 
   freezeStage(name) {
