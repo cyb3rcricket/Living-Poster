@@ -1,0 +1,591 @@
+{
+  "sources": {
+    "original": {
+      "poses": {
+        "canonical": {
+          "file": "/workspace/scripts/p05b-sea-only-verification/h1-zm3-original-canonical.png",
+          "cam": {
+            "x": 0,
+            "y": 0,
+            "z": 2,
+            "rx": 0,
+            "ry": 0
+          },
+          "verts": 3185,
+          "tris": 6144,
+          "drawCalls": 7,
+          "fps": 15,
+          "frameTimeMs": 67.72000000011175,
+          "seaSource": "original",
+          "footprintOn": true,
+          "footprintEffective": true,
+          "topology": "h1",
+          "h1FarZ": -3,
+          "horizonPy": 0.8349609400880706,
+          "psnrPosterFull": {
+            "mse": 9.074768105411287,
+            "psnr": 38.552448248817456,
+            "pctDiff5": 1.5644622909643733,
+            "maxDiff": 87.66666666666667,
+            "pixels": 968256
+          },
+          "psnrPosterWater": {
+            "mse": 7.924455916342253,
+            "psnr": 39.14110907093812,
+            "pctDiff5": 0.8678737094119408,
+            "maxDiff": 87.66666666666667,
+            "pixels": 160392
+          },
+          "holes": {
+            "holes": 147,
+            "waterish": 160391,
+            "pct": 0.09165102780081176
+          }
+        },
+        "push190": {
+          "file": "/workspace/scripts/p05b-sea-only-verification/h1-zm3-original-push190.png",
+          "cam": {
+            "x": 0,
+            "y": 0,
+            "z": 1.9,
+            "rx": 0,
+            "ry": 0
+          },
+          "verts": 3185,
+          "tris": 6144,
+          "drawCalls": 7,
+          "fps": 19,
+          "frameTimeMs": 52.46000000014901,
+          "seaSource": "original",
+          "footprintOn": true,
+          "footprintEffective": true,
+          "topology": "h1",
+          "h1FarZ": -3,
+          "horizonPy": 0.8417968776408884,
+          "psnrPosterFull": {
+            "mse": 1272.2808699334137,
+            "psnr": 17.0849736370883,
+            "pctDiff5": 78.29003899795094,
+            "maxDiff": 236.66666666666666,
+            "pixels": 968256
+          },
+          "psnrPosterWater": {
+            "mse": 2278.9656030234514,
+            "psnr": 14.553425905492475,
+            "pctDiff5": 89.70584567808868,
+            "maxDiff": 199.33333333333334,
+            "pixels": 160392
+          },
+          "holes": {
+            "holes": 27539,
+            "waterish": 160391,
+            "pct": 17.16991601773167
+          }
+        },
+        "push185": {
+          "file": "/workspace/scripts/p05b-sea-only-verification/h1-zm3-original-push185.png",
+          "cam": {
+            "x": 0,
+            "y": 0,
+            "z": 1.85,
+            "rx": 0,
+            "ry": 0
+          },
+          "verts": 3185,
+          "tris": 6144,
+          "drawCalls": 7,
+          "fps": 17,
+          "frameTimeMs": 57.75555555543138,
+          "seaSource": "original",
+          "footprintOn": true,
+          "footprintEffective": true,
+          "topology": "h1",
+          "h1FarZ": -3,
+          "horizonPy": 0.8453205567918254,
+          "psnrPosterFull": {
+            "mse": 1774.6746755710108,
+            "psnr": 15.639616088590632,
+            "pctDiff5": 85.50589926630974,
+            "maxDiff": 221,
+            "pixels": 968256
+          },
+          "psnrPosterWater": {
+            "mse": 2855.387606614634,
+            "psnr": 13.57415290672046,
+            "pctDiff5": 91.3798693201656,
+            "maxDiff": 204.33333333333334,
+            "pixels": 160392
+          },
+          "holes": {
+            "holes": 30167,
+            "waterish": 160391,
+            "pct": 18.808411943313526
+          }
+        },
+        "push170": {
+          "file": "/workspace/scripts/p05b-sea-only-verification/h1-zm3-original-push170.png",
+          "cam": {
+            "x": 0,
+            "y": 0,
+            "z": 1.7,
+            "rx": 0,
+            "ry": 0
+          },
+          "verts": 3185,
+          "tris": 6144,
+          "drawCalls": 7,
+          "fps": 19,
+          "frameTimeMs": 52.77499999990687,
+          "seaSource": "original",
+          "footprintOn": true,
+          "footprintEffective": true,
+          "topology": "h1",
+          "h1FarZ": -3,
+          "horizonPy": 0.856341425625607,
+          "psnrPosterFull": {
+            "mse": 2879.5846911009144,
+            "psnr": 13.537505048341057,
+            "pctDiff5": 93.55666270077336,
+            "maxDiff": 226.33333333333334,
+            "pixels": 968256
+          },
+          "psnrPosterWater": {
+            "mse": 3185.2624486690374,
+            "psnr": 13.099351391689291,
+            "pctDiff5": 96.2872213077959,
+            "maxDiff": 205.66666666666666,
+            "pixels": 160392
+          },
+          "holes": {
+            "holes": 35127,
+            "waterish": 160391,
+            "pct": 21.900854786116426
+          }
+        },
+        "left": {
+          "file": "/workspace/scripts/p05b-sea-only-verification/h1-zm3-original-left.png",
+          "cam": {
+            "x": -0.12,
+            "y": 0,
+            "z": 1.78,
+            "rx": 0,
+            "ry": 0.04
+          },
+          "verts": 3185,
+          "tris": 6144,
+          "drawCalls": 7,
+          "fps": 23,
+          "frameTimeMs": 43.625,
+          "seaSource": "original",
+          "footprintOn": true,
+          "footprintEffective": true,
+          "topology": "h1",
+          "h1FarZ": -3,
+          "horizonPy": 0.8510107089073409,
+          "psnrPosterFull": {
+            "mse": 3713.722066949987,
+            "psnr": 12.432709626237042,
+            "pctDiff5": 96.32638475775002,
+            "maxDiff": 219,
+            "pixels": 968256
+          },
+          "psnrPosterWater": {
+            "mse": 4053.107164530292,
+            "psnr": 12.052922741879291,
+            "pctDiff5": 97.65387301112276,
+            "maxDiff": 213.33333333333334,
+            "pixels": 160392
+          },
+          "holes": {
+            "holes": 36099,
+            "waterish": 160391,
+            "pct": 22.506873827085062
+          }
+        },
+        "right": {
+          "file": "/workspace/scripts/p05b-sea-only-verification/h1-zm3-original-right.png",
+          "cam": {
+            "x": 0.12,
+            "y": 0,
+            "z": 1.78,
+            "rx": 0,
+            "ry": -0.04
+          },
+          "verts": 3185,
+          "tris": 6144,
+          "drawCalls": 7,
+          "fps": 17,
+          "frameTimeMs": 57.54545454545455,
+          "seaSource": "original",
+          "footprintOn": true,
+          "footprintEffective": true,
+          "topology": "h1",
+          "h1FarZ": -3,
+          "horizonPy": 0.8510107089073409,
+          "psnrPosterFull": {
+            "mse": 4209.119250820366,
+            "psnr": 11.888891307151372,
+            "pctDiff5": 97.38963662502479,
+            "maxDiff": 235,
+            "pixels": 968256
+          },
+          "psnrPosterWater": {
+            "mse": 4663.110229934803,
+            "psnr": 11.44404679128494,
+            "pctDiff5": 98.21375130929223,
+            "maxDiff": 209,
+            "pixels": 160392
+          },
+          "holes": {
+            "holes": 49679,
+            "waterish": 160391,
+            "pct": 30.973683062017194
+          }
+        }
+      }
+    },
+    "sea-only": {
+      "poses": {
+        "canonical": {
+          "file": "/workspace/scripts/p05b-sea-only-verification/h1-zm3-sea-only-canonical.png",
+          "cam": {
+            "x": 0,
+            "y": 0,
+            "z": 2,
+            "rx": 0,
+            "ry": 0
+          },
+          "verts": 3185,
+          "tris": 6144,
+          "drawCalls": 7,
+          "fps": 17,
+          "frameTimeMs": 58.333333333333336,
+          "seaSource": "sea-only",
+          "footprintOn": true,
+          "footprintEffective": false,
+          "topology": "h1",
+          "h1FarZ": -3,
+          "horizonPy": 0.8349609400880706,
+          "psnrPosterFull": {
+            "mse": 24.182651764299983,
+            "psnr": 34.29576438889964,
+            "pctDiff5": 3.258125950161941,
+            "maxDiff": 130.66666666666666,
+            "pixels": 968256
+          },
+          "psnrPosterWater": {
+            "mse": 99.12787628636474,
+            "psnr": 28.168845589061977,
+            "pctDiff5": 11.09219911217517,
+            "maxDiff": 130.66666666666666,
+            "pixels": 160392
+          },
+          "holes": {
+            "holes": 2797,
+            "waterish": 160391,
+            "pct": 1.743863433733813
+          }
+        },
+        "push190": {
+          "file": "/workspace/scripts/p05b-sea-only-verification/h1-zm3-sea-only-push190.png",
+          "cam": {
+            "x": 0,
+            "y": 0,
+            "z": 1.9,
+            "rx": 0,
+            "ry": 0
+          },
+          "verts": 3185,
+          "tris": 6144,
+          "drawCalls": 7,
+          "fps": 18,
+          "frameTimeMs": 57.10000000004139,
+          "seaSource": "sea-only",
+          "footprintOn": true,
+          "footprintEffective": false,
+          "topology": "h1",
+          "h1FarZ": -3,
+          "horizonPy": 0.8417968776408884,
+          "psnrPosterFull": {
+            "mse": 1259.393481336364,
+            "psnr": 17.12918919819107,
+            "pctDiff5": 78.3086291228766,
+            "maxDiff": 236.66666666666666,
+            "pixels": 968256
+          },
+          "psnrPosterWater": {
+            "mse": 2201.1668890393394,
+            "psnr": 14.704273895361961,
+            "pctDiff5": 89.81807072671954,
+            "maxDiff": 199.33333333333334,
+            "pixels": 160392
+          },
+          "holes": {
+            "holes": 26039,
+            "waterish": 160391,
+            "pct": 16.23470144833563
+          }
+        },
+        "push185": {
+          "file": "/workspace/scripts/p05b-sea-only-verification/h1-zm3-sea-only-push185.png",
+          "cam": {
+            "x": 0,
+            "y": 0,
+            "z": 1.85,
+            "rx": 0,
+            "ry": 0
+          },
+          "verts": 3185,
+          "tris": 6144,
+          "drawCalls": 7,
+          "fps": 17,
+          "frameTimeMs": 57.788888888847495,
+          "seaSource": "sea-only",
+          "footprintOn": true,
+          "footprintEffective": false,
+          "topology": "h1",
+          "h1FarZ": -3,
+          "horizonPy": 0.8453205567918254,
+          "psnrPosterFull": {
+            "mse": 1757.7063930782356,
+            "psnr": 15.68134028534683,
+            "pctDiff5": 85.53223527662107,
+            "maxDiff": 221,
+            "pixels": 968256
+          },
+          "psnrPosterWater": {
+            "mse": 2752.953312302383,
+            "psnr": 13.732815146694149,
+            "pctDiff5": 91.53885480572596,
+            "maxDiff": 204.33333333333334,
+            "pixels": 160392
+          },
+          "holes": {
+            "holes": 27880,
+            "waterish": 160391,
+            "pct": 17.382521463174367
+          }
+        },
+        "push170": {
+          "file": "/workspace/scripts/p05b-sea-only-verification/h1-zm3-sea-only-push170.png",
+          "cam": {
+            "x": 0,
+            "y": 0,
+            "z": 1.7,
+            "rx": 0,
+            "ry": 0
+          },
+          "verts": 3185,
+          "tris": 6144,
+          "drawCalls": 7,
+          "fps": 18,
+          "frameTimeMs": 54.14166666660458,
+          "seaSource": "sea-only",
+          "footprintOn": true,
+          "footprintEffective": false,
+          "topology": "h1",
+          "h1FarZ": -3,
+          "horizonPy": 0.856341425625607,
+          "psnrPosterFull": {
+            "mse": 2850.6839410237703,
+            "psnr": 13.581312916743027,
+            "pctDiff5": 93.48168253023994,
+            "maxDiff": 226.33333333333334,
+            "pixels": 968256
+          },
+          "psnrPosterWater": {
+            "mse": 3010.794116914702,
+            "psnr": 13.343993021153393,
+            "pctDiff5": 95.83458027831811,
+            "maxDiff": 205.66666666666666,
+            "pixels": 160392
+          },
+          "holes": {
+            "holes": 32133,
+            "waterish": 160391,
+            "pct": 20.034166505601934
+          }
+        },
+        "left": {
+          "file": "/workspace/scripts/p05b-sea-only-verification/h1-zm3-sea-only-left.png",
+          "cam": {
+            "x": -0.12,
+            "y": 0,
+            "z": 1.78,
+            "rx": 0,
+            "ry": 0.04
+          },
+          "verts": 3185,
+          "tris": 6144,
+          "drawCalls": 7,
+          "fps": 22,
+          "frameTimeMs": 45.25833333330229,
+          "seaSource": "sea-only",
+          "footprintOn": true,
+          "footprintEffective": false,
+          "topology": "h1",
+          "h1FarZ": -3,
+          "horizonPy": 0.8510107089073409,
+          "psnrPosterFull": {
+            "mse": 3695.64875059561,
+            "psnr": 12.453896734624678,
+            "pctDiff5": 96.25419310595545,
+            "maxDiff": 219,
+            "pixels": 968256
+          },
+          "psnrPosterWater": {
+            "mse": 3944.0019909556563,
+            "psnr": 12.171432353642446,
+            "pctDiff5": 97.2180657389396,
+            "maxDiff": 213.33333333333334,
+            "pixels": 160392
+          },
+          "holes": {
+            "holes": 34685,
+            "waterish": 160391,
+            "pct": 21.625278226334395
+          }
+        },
+        "right": {
+          "file": "/workspace/scripts/p05b-sea-only-verification/h1-zm3-sea-only-right.png",
+          "cam": {
+            "x": 0.12,
+            "y": 0,
+            "z": 1.78,
+            "rx": 0,
+            "ry": -0.04
+          },
+          "verts": 3185,
+          "tris": 6144,
+          "drawCalls": 7,
+          "fps": 20,
+          "frameTimeMs": 49.27272727272727,
+          "seaSource": "sea-only",
+          "footprintOn": true,
+          "footprintEffective": false,
+          "topology": "h1",
+          "h1FarZ": -3,
+          "horizonPy": 0.8510107089073409,
+          "psnrPosterFull": {
+            "mse": 4190.48197720677,
+            "psnr": 11.908163837242531,
+            "pctDiff5": 97.29524010179126,
+            "maxDiff": 235,
+            "pixels": 968256
+          },
+          "psnrPosterWater": {
+            "mse": 4550.600553642091,
+            "psnr": 11.55011645546675,
+            "pctDiff5": 97.64389745124446,
+            "maxDiff": 209,
+            "pixels": 160392
+          },
+          "holes": {
+            "holes": 46837,
+            "waterish": 160391,
+            "pct": 29.2017631912015
+          }
+        }
+      }
+    }
+  },
+  "pageErrors": [],
+  "psnr": {
+    "orig-vs-sea-canonical": {
+      "full": {
+        "mse": 17.05722625696663,
+        "psnr": 35.81171950638541,
+        "pctDiff5": 1.8615944543591778,
+        "maxDiff": 130.33333333333334,
+        "pixels": 968256
+      },
+      "water": {
+        "mse": 102.97123090095191,
+        "psnr": 28.003644566111568,
+        "pctDiff5": 11.238091675395282,
+        "maxDiff": 130.33333333333334,
+        "pixels": 160392
+      }
+    },
+    "orig-vs-sea-push190": {
+      "full": {
+        "mse": 22.049169503382238,
+        "psnr": 34.69688124746179,
+        "pctDiff5": 2.11731195055853,
+        "maxDiff": 137.33333333333334,
+        "pixels": 968256
+      },
+      "water": {
+        "mse": 133.10664289158356,
+        "psnr": 26.888806307187952,
+        "pctDiff5": 12.781809566561922,
+        "maxDiff": 137.33333333333334,
+        "pixels": 160392
+      }
+    },
+    "orig-vs-sea-push185": {
+      "full": {
+        "mse": 25.555698768370615,
+        "psnr": 34.055926005189924,
+        "pctDiff5": 2.2031363606318988,
+        "maxDiff": 138.66666666666666,
+        "pixels": 968256
+      },
+      "water": {
+        "mse": 154.27489317838456,
+        "psnr": 26.24785106491609,
+        "pctDiff5": 13.299915207741034,
+        "maxDiff": 138.66666666666666,
+        "pixels": 160392
+      }
+    },
+    "orig-vs-sea-push170": {
+      "full": {
+        "mse": 42.215289482670904,
+        "psnr": 31.876105891633134,
+        "pctDiff5": 2.608814197898077,
+        "maxDiff": 166,
+        "pixels": 968256
+      },
+      "water": {
+        "mse": 254.84567393219737,
+        "psnr": 24.068030951359297,
+        "pctDiff5": 15.748915157863236,
+        "maxDiff": 166,
+        "pixels": 160392
+      }
+    },
+    "orig-vs-sea-left": {
+      "full": {
+        "mse": 45.75538390673479,
+        "psnr": 31.526381572541673,
+        "pctDiff5": 3.9814883667129353,
+        "maxDiff": 132.66666666666666,
+        "pixels": 968256
+      },
+      "water": {
+        "mse": 276.21655070077935,
+        "psnr": 23.718306632267844,
+        "pctDiff5": 24.035488054267045,
+        "maxDiff": 132.66666666666666,
+        "pixels": 160392
+      }
+    },
+    "orig-vs-sea-right": {
+      "full": {
+        "mse": 29.668317745170977,
+        "psnr": 33.407874392461174,
+        "pctDiff5": 1.712150505651398,
+        "maxDiff": 128,
+        "pixels": 968256
+      },
+      "water": {
+        "mse": 179.10199178679903,
+        "psnr": 25.599799452187337,
+        "pctDiff5": 10.335926978901691,
+        "maxDiff": 128,
+        "pixels": 160392
+      }
+    }
+  }
+}

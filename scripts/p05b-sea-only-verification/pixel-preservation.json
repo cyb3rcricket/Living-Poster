@@ -1,0 +1,19 @@
+{
+  "src": "reference/experimental/prototype-02/layer-f-water.png",
+  "sea": "reference/experimental/prototype-05/generated/layer-f-water-sea-only.png",
+  "hard": "reference/experimental/prototype-05/generated/water-missing-mask-hard.png",
+  "size": "1024x1024",
+  "protectedDiffPixels": 0,
+  "aboveBandDiffPixels": 0,
+  "aboveBandTransparentBlack": 874496,
+  "aboveBandPixels": 875520,
+  "waterBandPixels": 173056,
+  "waterBandOpaque": 173056,
+  "hardMaskPixels": 67399,
+  "hardMaskChanged": 67372,
+  "hardMaskUnchanged": 27,
+  "reconstructedAlphaMin": 255,
+  "reconstructedAlphaMax": 255,
+  "reconstructedOpaque": 67399,
+  "pass": true
+}

@@ -1,0 +1,31 @@
+{
+  "image": {
+    "width": 1024,
+    "height": 1024,
+    "waterBandY0": 855
+  },
+  "thresholds": {
+    "terrainAlpha": 32,
+    "featherRadiusPx": 2
+  },
+  "layers": {
+    "citadel": "reference/experimental/prototype-02/layer-d-citadel.png",
+    "sentinel": "reference/experimental/prototype-02/layer-c-sentinel.png",
+    "needles": "reference/experimental/prototype-02/layer-e-needles.png",
+    "unusedSilhouette": "reference/experimental/prototype-04/generated/citadel-silhouette-mask.png"
+  },
+  "counts": {
+    "waterBand": 173056,
+    "hard": 67399,
+    "hardPctOfBand": 38.94635262573964,
+    "hardPctOfImage": 6.427669525146484,
+    "citadel": 47594,
+    "sentinel": 19661,
+    "needles": 308,
+    "softNonZero": 69434,
+    "softNonZeroPctOfBand": 40.1222725591716,
+    "softCore255": 67399,
+    "featherRing": 2035
+  },
+  "waterLayerNote": "layer-f-water.png is fully opaque (alpha=255) for every water-band pixel. Valid ocean is therefore band AND NOT terrain, not water alpha."
+}

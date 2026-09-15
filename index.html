@@ -30,10 +30,155 @@
       <div class="dev-content">
         <!-- Prototype Selector Tabs -->
         <div class="proto-tabs">
+          <button id="tab-proto-05" class="proto-tab-btn">P05 (Ocean)</button>
           <button id="tab-proto-04" class="proto-tab-btn active">P04 (Volume)</button>
           <button id="tab-proto-03" class="proto-tab-btn">P03 (Handoff)</button>
           <button id="tab-proto-02" class="proto-tab-btn">P02 (Proxies)</button>
           <button id="tab-proto-01" class="proto-tab-btn">P01 (Awaken)</button>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- PROTOTYPE 05 CONTROLS (Painted Ocean Spatial Reconstruction) -->
+        <!-- ========================================================= -->
+        <div id="panel-proto-05" class="proto-subpanel panel-hidden">
+          <div class="section-label">WATER REPRESENTATION</div>
+          <div class="dev-row btn-group" style="grid-template-columns: repeat(5, 1fr);">
+            <button id="p5-btn-poster" class="mode-btn">POSTER</button>
+            <button id="p5-btn-card" class="mode-btn">CARD</button>
+            <button id="p5-btn-slab" class="mode-btn active">SLAB</button>
+            <button id="p5-btn-stack" class="mode-btn">STACK</button>
+            <button id="p5-btn-overlay" class="mode-btn">50/50</button>
+          </div>
+          <div class="dev-row btn-group" style="grid-template-columns: repeat(4, 1fr);">
+            <button id="p5-btn-wire" class="mode-btn">WIRE</button>
+            <button id="p5-btn-footprint" class="mode-btn">FOOTPRINT</button>
+            <button id="p5-btn-proj" class="mode-btn">PROJ UV</button>
+            <button id="p5-btn-profiledbg" class="mode-btn">PROFILE</button>
+          </div>
+
+          <div class="section-label">P05B HORIZON TOPOLOGY</div>
+          <div class="dev-row btn-group" style="grid-template-columns: repeat(5, 1fr);">
+            <button id="p5-btn-topo-base" class="tech-btn active">BASE</button>
+            <button id="p5-btn-h1" class="tech-btn">H1 FAR</button>
+            <button id="p5-btn-h2" class="tech-btn">H2 COVE</button>
+            <button id="p5-btn-h3" class="tech-btn">H3 HYBRID</button>
+            <button id="p5-btn-h4" class="tech-btn">H4 PIN</button>
+          </div>
+          <div class="dev-slider-group">
+            <label>
+              H1 far Z: <span id="p5-val-h1far">-3.00</span>
+              <input type="range" id="p5-slider-h1far" min="-6" max="0.5" step="0.1" value="-3" />
+            </label>
+            <label>
+              H2 cove start t: <span id="p5-val-covestart">0.24</span>
+              <input type="range" id="p5-slider-covestart" min="0.10" max="0.50" step="0.01" value="0.24" />
+            </label>
+            <label>
+              H2/H3 far Z: <span id="p5-val-covefar">-3.00</span>
+              <input type="range" id="p5-slider-covefar" min="-6" max="0.6" step="0.1" value="-3" />
+            </label>
+            <label>
+              H2 far verticality: <span id="p5-val-covevert">0.85</span>
+              <input type="range" id="p5-slider-covevert" min="0.00" max="1.00" step="0.05" value="0.85" />
+            </label>
+            <label>
+              H3 split t: <span id="p5-val-h3split">0.30</span>
+              <input type="range" id="p5-slider-h3split" min="0.12" max="0.55" step="0.01" value="0.30" />
+            </label>
+          </div>
+
+          <div class="section-label">SEA SOURCE</div>
+          <div class="dev-row btn-group" style="grid-template-columns: repeat(2, 1fr);">
+            <button id="p5-btn-sea-original" class="tech-btn">ORIGINAL</button>
+            <button id="p5-btn-sea-only" class="tech-btn active">SEA-ONLY</button>
+          </div>
+
+          <div class="section-label">FOOTPRINT TREATMENT</div>
+          <div class="dev-row btn-group" style="grid-template-columns: repeat(3, 1fr);">
+            <button id="p5-btn-fp0" class="tech-btn active">F0 HARD</button>
+            <button id="p5-btn-fp1" class="tech-btn">F1 SOFT</button>
+            <button id="p5-btn-fp2" class="tech-btn">F2 FILL</button>
+          </div>
+
+          <div class="section-label">DEPTH PROFILE LAB</div>
+          <div class="dev-row btn-group" style="grid-template-columns: repeat(4, 1fr);">
+            <button id="p5-btn-prof-linear" class="tech-btn active">A LINEAR</button>
+            <button id="p5-btn-prof-smooth" class="tech-btn">B SMOOTH</button>
+            <button id="p5-btn-prof-power" class="tech-btn">C POWER</button>
+            <button id="p5-btn-prof-hermite" class="tech-btn">D HERMITE</button>
+          </div>
+
+          <div class="dev-slider-group">
+            <label>
+              zHorizon: <span id="p5-val-zhorizon">0.70</span>
+              <input type="range" id="p5-slider-zhorizon" min="0.66" max="0.82" step="0.01" value="0.70" />
+            </label>
+            <label>
+              zNear: <span id="p5-val-znear">1.38</span>
+              <input type="range" id="p5-slider-znear" min="1.15" max="1.40" step="0.01" value="1.38" />
+            </label>
+            <label>
+              Power Gamma: <span id="p5-val-gamma">1.20</span>
+              <input type="range" id="p5-slider-gamma" min="0.65" max="2.00" step="0.05" value="1.20" />
+            </label>
+            <label>
+              Hermite Mid t: <span id="p5-val-tmid">0.40</span>
+              <input type="range" id="p5-slider-tmid" min="0.15" max="0.85" step="0.01" value="0.40" />
+            </label>
+            <label>
+              Hermite Mid zT: <span id="p5-val-zmidt">0.28</span>
+              <input type="range" id="p5-slider-zmidt" min="0.05" max="0.95" step="0.01" value="0.28" />
+            </label>
+            <label>
+              Horizon Feather (px): <span id="p5-val-feather">3.0</span>
+              <input type="range" id="p5-slider-feather" min="0" max="8" step="0.5" value="3" />
+            </label>
+          </div>
+
+          <div class="section-label">DEPTH / FOOTPRINT / MOTION</div>
+          <div class="dev-row btn-group">
+            <button id="p5-btn-depthwrite" class="tech-btn active">DepthWrite ON</button>
+            <button id="p5-btn-footprint-toggle" class="tech-btn active">Footprint ON</button>
+            <button id="p5-btn-alive" class="tech-btn">Alive OFF</button>
+            <button id="p5-btn-contact" class="tech-btn">Contact OFF</button>
+          </div>
+
+          <div class="section-label">MOTION &amp; CAMERA PATH</div>
+          <div class="dev-row btn-group">
+            <button id="p5-btn-motion-pointer" class="tech-btn active">Pointer</button>
+            <button id="p5-btn-motion-path" class="tech-btn">Scripted Path</button>
+          </div>
+          <div class="dev-row">
+            <button id="p5-btn-flare-mode" class="action-btn">Flare: SPIRE-LOCKED</button>
+          </div>
+
+          <div class="section-label">WATER TELEMETRY</div>
+          <div class="telemetry-box" id="p5-telemetry-box">
+            <div class="telem-row"><span class="telem-label">Profile:</span><span id="p5-tel-profile" class="telem-val highlight">LINEAR</span></div>
+            <div class="telem-row"><span class="telem-label">Topology:</span><span id="p5-tel-topo" class="telem-val">BASELINE</span></div>
+            <div class="telem-row"><span class="telem-label">Sea source:</span><span id="p5-tel-seasource" class="telem-val highlight">SEA-ONLY</span></div>
+            <div class="telem-grid">
+              <div><span class="telem-sub">Verts:</span> <span id="p5-tel-verts">0</span></div>
+              <div><span class="telem-sub">Tris:</span> <span id="p5-tel-tris">0</span></div>
+              <div><span class="telem-sub">zH:</span> <span id="p5-tel-zh">0.70</span></div>
+              <div><span class="telem-sub">zN:</span> <span id="p5-tel-zn">1.38</span></div>
+            </div>
+            <div class="telem-row"><span class="telem-label">Camera:</span><span id="p5-tel-cam" class="telem-val">X: 0.00 | Y: 0.00 | Z: 2.00</span></div>
+            <div class="telem-row"><span class="telem-label">Horizon v:</span><span id="p5-tel-horizon" class="telem-val">0.835</span></div>
+            <div class="telem-row"><span class="telem-label">Performance:</span><span id="p5-tel-perf" class="telem-val">60 fps (16.6 ms)</span></div>
+          </div>
+
+          <div class="section-label">TUNABLE CAMERA ENVELOPE</div>
+          <div class="dev-slider-group">
+            <label>
+              Lateral Shift (&Delta;X): <span id="p5-val-shift-x">0.120</span>
+              <input type="range" id="p5-slider-shift-x" min="0.040" max="0.180" step="0.010" value="0.120" />
+            </label>
+            <label>
+              Forward Push (&Delta;Z): <span id="p5-val-push-z">0.300</span>
+              <input type="range" id="p5-slider-push-z" min="0.080" max="0.300" step="0.010" value="0.300" />
+            </label>
+          </div>
         </div>
 
         <!-- ========================================================= -->
@@ -280,7 +425,7 @@
         </div>
 
         <div class="dev-hotkeys">
-          <small>Hotkeys: [1] P01 &bull; [2] P02 &bull; [3] P03 &bull; [4] P04 &bull; [Space] Toggle Flat/Vol &bull; [S] Sweep &bull; [F] Flare &bull; [H] Hide UI</small>
+          <small>Hotkeys: [1]–[5] prototypes &bull; [Space] contextual &bull; [S] Sweep/Path &bull; [F] Flare &bull; [H] Hide UI</small>
         </div>
       </div>
     </div>
