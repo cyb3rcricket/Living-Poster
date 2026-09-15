@@ -23,6 +23,9 @@ const SRC = path.join(OUT, 'source');
 const SEA_ONLY = path.join(ROOT, 'reference/experimental/prototype-05/generated/layer-f-water-sea-only.png');
 const SENTINEL = path.join(ROOT, 'reference/experimental/prototype-02/layer-c-sentinel.png');
 const SKY = path.join(ROOT, 'reference/experimental/prototype-02/layer-a-deep-sky.png');
+const CITADEL = path.join(ROOT, 'reference/experimental/prototype-02/layer-d-citadel.png');
+const NEEDLES = path.join(ROOT, 'reference/experimental/prototype-02/layer-e-needles.png');
+const POSTER = path.join(ROOT, 'reference/poster.jpeg');
 
 const V0 = 855 / 1024;
 const ATW = 2048;
@@ -507,6 +510,22 @@ function buildHaze(hazeSrc, sky) {
   return base;
 }
 
+function buildSkyClean(poster, sky, sent, citadel, needles) {
+  const w = 1024;
+  const h = 1024;
+  const dst = new PNG({ width: w, height: h });
+  for (let i = 0; i < w * h; i++) {
+    const p = i * 4;
+    const occ = Math.max(sent.data[p + 3], citadel.data[p + 3], needles.data[p + 3]) / 255;
+    const useFill = occ > 0.12;
+    dst.data[p] = useFill ? sky.data[p] : poster.data[p];
+    dst.data[p + 1] = useFill ? sky.data[p + 1] : poster.data[p + 1];
+    dst.data[p + 2] = useFill ? sky.data[p + 2] : poster.data[p + 2];
+    dst.data[p + 3] = 255;
+  }
+  return dst;
+}
+
 function buildSentinelRings(sent) {
   const W = sent.width;
   const H = sent.height;
@@ -596,6 +615,9 @@ function main() {
   const sea = readImage(SEA_ONLY);
   const sent = readImage(SENTINEL);
   const sky = readImage(SKY);
+  const citadel = readImage(CITADEL);
+  const needles = readImage(NEEDLES);
+  const poster = readImage(POSTER);
   const paintPath = firstExisting([
     path.join(SRC, 'ocean-paint-16x9.jpg'),
     path.join(SRC, 'ocean-paint-16x9.png'),
@@ -623,6 +645,9 @@ function main() {
 
   const haze = buildHaze(hazeSrc, sky);
   savePng(path.join(OUT, 'haze-fill-512.png'), haze);
+
+  const skyClean = buildSkyClean(poster, sky, sent, citadel, needles);
+  savePng(path.join(OUT, 'sky-clean-1024.png'), skyClean);
 
   const rings = buildSentinelRings(sent);
   const ringsPath = path.join(OUT, 'sentinel-rings.json');

@@ -412,12 +412,6 @@ export function createLivingPosterWorld({ THREE, renderer, container, camera, sc
     const zF = ringsData.zFront;
     const thick = ringsData.thickness;
     const inset = ringsData.wedgeInset;
-    const positions = [];
-    const normals = [];
-    const uvs = [];
-    const canonUvs = [];
-    const surface = [];
-    const indices = [];
 
     const front = [];
     const back = [];
@@ -436,17 +430,38 @@ export function createLivingPosterWorld({ THREE, renderer, container, camera, sc
       back.push({ pL: pLb, pR: pRb, uL: uLb, uR: uRb, v });
     }
 
-    function pushVert(p, uv, canon, surf) {
-      positions.push(p.x, p.y, p.z);
-      uvs.push(uv[0], uv[1]);
-      canonUvs.push(canon[0], canon[1]);
-      surface.push(surf);
-      normals.push(0, 0, 1);
-      return positions.length / 3 - 1;
+    function makeSentinelGeo(pos, uv, canon, surf, idx) {
+      const geo = track(new THREE.BufferGeometry());
+      geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+      geo.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+      geo.setAttribute('canonUv', new THREE.Float32BufferAttribute(canon, 2));
+      geo.setAttribute('surfaceType', new THREE.Float32BufferAttribute(surf, 1));
+      geo.setIndex(idx);
+      geo.computeVertexNormals();
+      return geo;
     }
 
-    function quad(a, b, c, d) {
-      indices.push(a, b, c, a, c, d);
+    const frontPos = [];
+    const frontUv = [];
+    const frontCanon = [];
+    const frontSurf = [];
+    const frontIdx = [];
+    const hullPos = [];
+    const hullUv = [];
+    const hullCanon = [];
+    const hullSurf = [];
+    const hullIdx = [];
+
+    function push(bufPos, bufUv, bufCanon, bufSurf, p, uv, canon, surf) {
+      bufPos.push(p.x, p.y, p.z);
+      bufUv.push(uv[0], uv[1]);
+      bufCanon.push(canon[0], canon[1]);
+      bufSurf.push(surf);
+      return bufPos.length / 3 - 1;
+    }
+
+    function quad(idx, a, b, c, d) {
+      idx.push(a, b, c, a, c, d);
     }
 
     for (let i = 0; i < rings.length - 1; i++) {
@@ -461,50 +476,42 @@ export function createLivingPosterWorld({ THREE, renderer, container, camera, sc
       const vSide0 = i / (rings.length - 1);
       const vSide1 = (i + 1) / (rings.length - 1);
 
-      const iFL0 = pushVert(f0.pL, [0, vSide0], cL0, 0);
-      const iFR0 = pushVert(f0.pR, [1, vSide0], cR0, 0);
-      const iFL1 = pushVert(f1.pL, [0, vSide1], cL1, 0);
-      const iFR1 = pushVert(f1.pR, [1, vSide1], cR1, 0);
-      quad(iFL0, iFL1, iFR1, iFR0);
+      const iFL0 = push(frontPos, frontUv, frontCanon, frontSurf, f0.pL, [0, vSide0], cL0, 0);
+      const iFR0 = push(frontPos, frontUv, frontCanon, frontSurf, f0.pR, [1, vSide0], cR0, 0);
+      const iFL1 = push(frontPos, frontUv, frontCanon, frontSurf, f1.pL, [0, vSide1], cL1, 0);
+      const iFR1 = push(frontPos, frontUv, frontCanon, frontSurf, f1.pR, [1, vSide1], cR1, 0);
+      quad(frontIdx, iFL0, iFL1, iFR1, iFR0);
 
-      const iBL0 = pushVert(b0.pL, [0.0, vSide0], cL0, 1);
-      const iBL1 = pushVert(b1.pL, [0.0, vSide1], cL1, 1);
-      const iFL0s = pushVert(f0.pL, [0.85, vSide0], cL0, 1);
-      const iFL1s = pushVert(f1.pL, [0.85, vSide1], cL1, 1);
-      quad(iFL0s, iFL1s, iBL1, iBL0);
+      const iBL0 = push(hullPos, hullUv, hullCanon, hullSurf, b0.pL, [0.0, vSide0], cL0, 1);
+      const iBL1 = push(hullPos, hullUv, hullCanon, hullSurf, b1.pL, [0.0, vSide1], cL1, 1);
+      const iFL0s = push(hullPos, hullUv, hullCanon, hullSurf, f0.pL, [0.85, vSide0], cL0, 1);
+      const iFL1s = push(hullPos, hullUv, hullCanon, hullSurf, f1.pL, [0.85, vSide1], cL1, 1);
+      quad(hullIdx, iFL0s, iFL1s, iBL1, iBL0);
 
-      const iBR0 = pushVert(b0.pR, [1.0, vSide0], cR0, 1);
-      const iBR1 = pushVert(b1.pR, [1.0, vSide1], cR1, 1);
-      const iFR0s = pushVert(f0.pR, [0.85, vSide0], cR0, 1);
-      const iFR1s = pushVert(f1.pR, [0.85, vSide1], cR1, 1);
-      quad(iFR0s, iBR0, iBR1, iFR1s);
+      const iBR0 = push(hullPos, hullUv, hullCanon, hullSurf, b0.pR, [1.0, vSide0], cR0, 1);
+      const iBR1 = push(hullPos, hullUv, hullCanon, hullSurf, b1.pR, [1.0, vSide1], cR1, 1);
+      const iFR0s = push(hullPos, hullUv, hullCanon, hullSurf, f0.pR, [0.85, vSide0], cR0, 1);
+      const iFR1s = push(hullPos, hullUv, hullCanon, hullSurf, f1.pR, [0.85, vSide1], cR1, 1);
+      quad(hullIdx, iFR0s, iBR0, iBR1, iFR1s);
 
-      const iBLcap = pushVert(b0.pL, [0.15, vSide0], cL0, 1);
-      const iBRcap = pushVert(b0.pR, [0.85, vSide0], cR0, 1);
-      const iBL1c = pushVert(b1.pL, [0.15, vSide1], cL1, 1);
-      const iBR1c = pushVert(b1.pR, [0.85, vSide1], cR1, 1);
-      quad(iBRcap, iBR1c, iBL1c, iBLcap);
+      const iBLcap = push(hullPos, hullUv, hullCanon, hullSurf, b0.pL, [0.15, vSide0], cL0, 1);
+      const iBRcap = push(hullPos, hullUv, hullCanon, hullSurf, b0.pR, [0.85, vSide0], cR0, 1);
+      const iBL1c = push(hullPos, hullUv, hullCanon, hullSurf, b1.pL, [0.15, vSide1], cL1, 1);
+      const iBR1c = push(hullPos, hullUv, hullCanon, hullSurf, b1.pR, [0.85, vSide1], cR1, 1);
+      quad(hullIdx, iBRcap, iBR1c, iBL1c, iBLcap);
     }
 
     const lastF = front[front.length - 1];
     const lastB = back[back.length - 1];
     const cL = [lastF.uL, 1 - lastF.v];
     const cR = [lastF.uR, 1 - lastF.v];
-    const a = pushVert(lastF.pL, [0, 1], cL, 0.4);
-    const b = pushVert(lastF.pR, [1, 1], cR, 0.4);
-    const c = pushVert(lastB.pR, [1, 0.7], cR, 1);
-    const d = pushVert(lastB.pL, [0, 0.7], cL, 1);
-    quad(a, b, c, d);
+    const a = push(hullPos, hullUv, hullCanon, hullSurf, lastF.pL, [0, 1], cL, 1);
+    const b = push(hullPos, hullUv, hullCanon, hullSurf, lastF.pR, [1, 1], cR, 1);
+    const c = push(hullPos, hullUv, hullCanon, hullSurf, lastB.pR, [1, 0.7], cR, 1);
+    const d = push(hullPos, hullUv, hullCanon, hullSurf, lastB.pL, [0, 0.7], cL, 1);
+    quad(hullIdx, a, b, c, d);
 
-    const geo = track(new THREE.BufferGeometry());
-    geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-    geo.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
-    geo.setAttribute('canonUv', new THREE.Float32BufferAttribute(canonUvs, 2));
-    geo.setAttribute('surfaceType', new THREE.Float32BufferAttribute(surface, 1));
-    geo.setIndex(indices);
-    geo.computeVertexNormals();
-
-    const mat = track(new THREE.ShaderMaterial({
+    const frontMat = track(new THREE.ShaderMaterial({
       uniforms: {
         uFrontTexture: { value: textures.sentinel },
         uSideTexture: { value: textures.sentinelSide },
@@ -517,12 +524,39 @@ export function createLivingPosterWorld({ THREE, renderer, container, camera, sc
       transparent: true,
       depthTest: true,
       depthWrite: true,
-      side: THREE.DoubleSide,
+      side: THREE.FrontSide,
     }));
-    const mesh = new THREE.Mesh(geo, mat);
-    mesh.name = 'lp-sentinel';
-    mesh.renderOrder = 5;
-    group.add(mesh);
+    const hullMat = track(new THREE.ShaderMaterial({
+      uniforms: {
+        uFrontTexture: { value: textures.sentinel },
+        uSideTexture: { value: textures.sentinelSide },
+        uCanonViewMatrix: { value: canonView },
+        uCanonProjMatrix: { value: canonProj },
+        uLightingStrength: { value: 0.55 },
+      },
+      vertexShader: SENTINEL_VERT,
+      fragmentShader: SENTINEL_FRAG,
+      transparent: false,
+      depthTest: true,
+      depthWrite: true,
+      side: THREE.FrontSide,
+    }));
+
+    const frontMesh = new THREE.Mesh(
+      makeSentinelGeo(frontPos, frontUv, frontCanon, frontSurf, frontIdx),
+      frontMat,
+    );
+    frontMesh.name = 'lp-sentinel-front';
+    frontMesh.renderOrder = 5;
+    group.add(frontMesh);
+
+    const hullMesh = new THREE.Mesh(
+      makeSentinelGeo(hullPos, hullUv, hullCanon, hullSurf, hullIdx),
+      hullMat,
+    );
+    hullMesh.name = 'lp-sentinel-hull';
+    hullMesh.renderOrder = 5;
+    group.add(hullMesh);
   }
 
   function buildNeedles() {
@@ -681,7 +715,7 @@ export function createLivingPosterWorld({ THREE, renderer, container, camera, sc
       meshData,
       ringsData,
     ] = await Promise.all([
-      load('/reference/experimental/prototype-02/layer-a-deep-sky.png'),
+      load('/reference/experimental/living-poster-v0/sky-clean-1024.png'),
       load('/reference/experimental/prototype-02/layer-b-ribbons.png'),
       load('/reference/experimental/prototype-02/layer-c-sentinel.png'),
       load('/reference/experimental/prototype-02/layer-e-needles.png'),
@@ -736,7 +770,7 @@ export function createLivingPosterWorld({ THREE, renderer, container, camera, sc
     }
     ribbonT += dt || 0;
     if (ribbonA) {
-      ribbonA.position.x = Math.sin(ribbonT * 0.012) * 0.003;
+      ribbonA.position.x = Math.sin(ribbonT * 0.012) * 0.002;
     }
   }
 
