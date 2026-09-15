@@ -41,6 +41,16 @@
  *
  * Targets (parent policy): 60 fps ideal, 45+ acceptable, stop world expansion
  * below 30. This module only reports knobs + `info.stopExpansion`.
+ *
+ * Parent rAF (required for frame totals — Three.js r186 resets
+ * `info.render` at the start of every `renderer.render()` when
+ * `info.autoReset` is true, so multi-pass P06 would report only the last pass):
+ *   quality.beginFrame(now)  // autoReset=false; info.reset() once
+ *   proto.update(now)        // any number of renderer.render() calls
+ *   quality.endFrame()       // snapshot calls + triangles; AUTO may step
+ *   const s = quality.getStats()
+ * Do not call `renderer.info.reset()` between begin/end. Next beginFrame
+ * resets. `dispose()` restores `autoReset`.
  */
 
 export const QUALITY_LEVELS = Object.freeze(['auto', 'high', 'medium', 'low']);
@@ -82,10 +92,6 @@ const AUTO_EVAL_MS = 500;
 const EMA_ALPHA = 0.12;
 
 const HIGH_PIXEL_BUDGET = 1920 * 1080 * PIXEL_RATIO_CAP;
-
-function clamp(x, lo, hi) {
-  return Math.max(lo, Math.min(hi, x));
-}
 
 function isTier(value) {
   return value === 'high' || value === 'medium' || value === 'low';
@@ -239,8 +245,10 @@ export function createQualityController({ renderer, container }) {
       lastDrawCalls = renderer.info.render.calls || 0;
       lastTriangles = renderer.info.render.triangles || 0;
     }
-    const t = typeof performance !== 'undefined' ? performance.now() : lastBegin;
-    maybeAutoStep(t);
+    // Clock from beginFrame(now) so AUTO does not mix rAF timestamps with
+    // performance.now(), and so a HUD can call getStats() after endFrame
+    // without a second reset.
+    maybeAutoStep(lastBegin);
   }
 
   function getFlags() {
@@ -248,8 +256,9 @@ export function createQualityController({ renderer, container }) {
   }
 
   function getStats() {
-    const frameTime = avgFrameTime;
-    const fps = frameTime > 0 ? 1000 / frameTime : 0;
+    const measured = sampleCount > 0;
+    const frameTime = measured ? avgFrameTime : 0;
+    const fps = measured && frameTime > 0 ? 1000 / frameTime : 0;
     const flags = getFlags();
     return {
       fps,
@@ -268,6 +277,7 @@ export function createQualityController({ renderer, container }) {
         sampleCount,
         autoReady: sampleCount >= AUTO_WARMUP_FRAMES,
         stopExpansion: fps < STOP_EXPANSION_FPS,
+        belowAcceptable: fps < ACCEPTABLE_FPS,
         targetFps: TARGET_FPS,
         acceptableFps: ACCEPTABLE_FPS,
         stopExpansionFps: STOP_EXPANSION_FPS,
