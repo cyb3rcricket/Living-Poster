@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Living Poster — Technical Prototypes</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌌</text></svg>" />
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <!-- Main Viewport Container (preserves 1:1 aspect ratio of poster.jpeg) -->
+  <div id="experience-wrapper">
+    <div id="canvas-container">
+      <canvas id="webgl-canvas"></canvas>
+    </div>
+
+    <!-- Initial Minimal State: ENTER control (Prototype 01) -->
+    <div id="enter-overlay" class="overlay-state-visible">
+      <button id="enter-btn" aria-label="Awaken the painting">ENTER</button>
+      <div id="enter-subtext">Living Poster &mdash; Technical Experiment</div>
+    </div>
+
+    <!-- Development Instrumentation & Comparison Panel -->
+    <div id="dev-panel">
+      <div class="dev-header">
+        <span class="dev-title" id="dev-header-title">EXPERIMENT SELECTOR</span>
+        <button id="dev-toggle-btn" class="dev-text-btn">[Settings]</button>
+      </div>
+
+      <div class="dev-content">
+        <!-- Prototype Selector Tabs -->
+        <div class="proto-tabs">
+          <button id="tab-proto-04" class="proto-tab-btn active">P04 (Volume)</button>
+          <button id="tab-proto-03" class="proto-tab-btn">P03 (Handoff)</button>
+          <button id="tab-proto-02" class="proto-tab-btn">P02 (Proxies)</button>
+          <button id="tab-proto-01" class="proto-tab-btn">P01 (Awaken)</button>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- PROTOTYPE 04 CONTROLS (Citadel Volumetric Reconstruction) -->
+        <!-- ========================================================= -->
+        <div id="panel-proto-04" class="proto-subpanel">
+          <div class="section-label">DEVELOPMENT COMPARISON MODES</div>
+          <div class="dev-row btn-group" style="grid-template-columns: repeat(4, 1fr);">
+            <button id="p4-btn-poster" class="mode-btn">POSTER</button>
+            <button id="p4-btn-proxy" class="mode-btn">FLAT PROXY</button>
+            <button id="p4-btn-volume" class="mode-btn active">VOLUME</button>
+            <button id="p4-btn-overlay" class="mode-btn">50/50</button>
+          </div>
+          <div class="dev-row btn-group" style="grid-template-columns: repeat(3, 1fr);">
+            <button id="p4-btn-silhouette" class="mode-btn">SILHOUETTE</button>
+            <button id="p4-btn-wireframe" class="mode-btn">WIREFRAME</button>
+            <button id="p4-btn-generated" class="mode-btn">GENERATED</button>
+          </div>
+
+          <div class="section-label">TRANSITION: FLAT PROXY &harr; VOLUME</div>
+          <div class="dev-slider-group">
+            <label>
+              Citadel Blend: <span id="p4-val-blend">100% Volume</span>
+              <input type="range" id="p4-slider-blend" min="0.0" max="1.0" step="0.01" value="1.0" />
+            </label>
+          </div>
+
+          <div class="section-label">MOTION &amp; CAMERA SWEEP</div>
+          <div class="dev-row btn-group">
+            <button id="p4-btn-motion-pointer" class="tech-btn active">Pointer (Manual)</button>
+            <button id="p4-btn-motion-sweep" class="tech-btn">Scripted Sweep (Auto)</button>
+          </div>
+
+          <div class="dev-row">
+            <button id="p4-btn-flare-mode" class="action-btn">Flare: SPIRE-LOCKED</button>
+          </div>
+
+          <div class="section-label">GEOMETRY &amp; ALIGNMENT TELEMETRY</div>
+          <div class="telemetry-box" id="p4-telemetry-box">
+            <div class="telem-row"><span class="telem-label">Canon Drift:</span><span id="p4-tel-drift" class="telem-val highlight">0.00 px (Exact)</span></div>
+            <div class="telem-grid">
+              <div><span class="telem-sub">Triangles:</span> <span id="p4-tel-triangles">668</span></div>
+              <div><span class="telem-sub">Vertices:</span> <span id="p4-tel-vertices">336</span></div>
+              <div><span class="telem-sub">Thickness:</span> <span id="p4-tel-thickness">0.382</span></div>
+              <div><span class="telem-sub">Z-Range:</span> <span id="p4-tel-zrange">0.63 &ndash; 1.01</span></div>
+            </div>
+            <div class="telem-row"><span class="telem-label">Camera:</span><span id="p4-tel-cam" class="telem-val">X: 0.00 | Y: 0.00 | Z: 2.00</span></div>
+            <div class="telem-row"><span class="telem-label">Performance:</span><span id="p4-tel-perf" class="telem-val">60 fps (16.6 ms)</span></div>
+          </div>
+
+          <div class="section-label">TUNABLE CAMERA ENVELOPE</div>
+          <div class="dev-slider-group">
+            <label>
+              Lateral Shift Amplitude (&Delta;X): <span id="p4-val-shift-x">0.120</span>
+              <input type="range" id="p4-slider-shift-x" min="0.040" max="0.220" step="0.010" value="0.120" />
+            </label>
+            <label>
+              Forward Push (&Delta;Z): <span id="p4-val-push-z">0.140</span>
+              <input type="range" id="p4-slider-push-z" min="0.000" max="0.250" step="0.010" value="0.140" />
+            </label>
+            <label>
+              Side Facet Lighting Strength: <span id="p4-val-lighting">0.35</span>
+              <input type="range" id="p4-slider-lighting" min="0.00" max="1.00" step="0.05" value="0.35" />
+            </label>
+          </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- PROTOTYPE 03 CONTROLS (Invisible Handoff)                -->
+        <!-- ========================================================= -->
+        <div id="panel-proto-03" class="proto-subpanel">
+          <div class="section-label">TRANSITION STATE</div>
+          <div class="dev-row p3-state-row">
+            <span id="p3-badge-stage" class="stage-badge stage-idle">IDLE</span>
+            <span id="p3-val-progress" class="stage-progress">0.0%</span>
+          </div>
+
+          <div class="dev-slider-group">
+            <label>
+              Master Progress Scrubber:
+              <input type="range" id="p3-slider-progress" min="0.0" max="1.0" step="0.005" value="0.0" />
+            </label>
+          </div>
+
+          <div class="dev-row btn-group">
+            <button id="p3-btn-replay" class="action-btn active">Replay (7.0s)</button>
+            <button id="p3-btn-playpause" class="action-btn">Pause</button>
+            <button id="p3-btn-solo" class="action-btn">Solo Handoff</button>
+          </div>
+
+          <div class="section-label">DIAGNOSTIC MODES</div>
+          <div class="dev-row btn-group">
+            <button id="p3-btn-diag-normal" class="mode-btn active">NORMAL</button>
+            <button id="p3-btn-diag-overlay" class="mode-btn">50/50</button>
+            <button id="p3-btn-diag-diff" class="mode-btn">DIFF</button>
+            <button id="p3-btn-diag-p1" class="mode-btn">P01</button>
+            <button id="p3-btn-diag-p2" class="mode-btn">P02</button>
+          </div>
+
+          <div class="section-label">ALIGNMENT &amp; DRIFT TELEMETRY</div>
+          <div class="telemetry-box" id="p3-telemetry-box">
+            <div class="telem-row"><span class="telem-label">Max Drift:</span><span id="p3-tel-max" class="telem-val highlight">0.00 px</span></div>
+            <div class="telem-grid">
+              <div><span class="telem-sub">Sentinel:</span> <span id="p3-tel-sentinel">0.00 px</span></div>
+              <div><span class="telem-sub">Citadel:</span> <span id="p3-tel-citadel">0.00 px</span></div>
+              <div><span class="telem-sub">Needle:</span> <span id="p3-tel-needle">0.00 px</span></div>
+              <div><span class="telem-sub">Horizon:</span> <span id="p3-tel-horizon">0.00 px</span></div>
+            </div>
+            <div class="telem-row"><span class="telem-label">Weights:</span><span id="p3-tel-weights" class="telem-val">P01: 100% | P02: 0%</span></div>
+            <div class="telem-row"><span class="telem-label">Performance:</span><span id="p3-tel-perf" class="telem-val">60 fps (16.6 ms)</span></div>
+          </div>
+
+          <div class="section-label">TUNABLE PARAMETERS</div>
+          <div class="dev-slider-group">
+            <label>
+              Sequence Duration: <span id="p3-val-duration">7.0s</span>
+              <input type="range" id="p3-slider-duration" min="3.0" max="12.0" step="0.5" value="7.0" />
+            </label>
+            <label>
+              P01 Max Depth: <span id="p3-val-maxdepth">0.025</span>
+              <input type="range" id="p3-slider-maxdepth" min="0.010" max="0.080" step="0.005" value="0.025" />
+            </label>
+            <label>
+              Camera Push: <span id="p3-val-push">0.080</span>
+              <input type="range" id="p3-slider-push" min="0.020" max="0.150" step="0.005" value="0.080" />
+            </label>
+            <label>
+              Handoff Start / End: <span id="p3-val-window">0.30 &mdash; 0.70</span>
+              <div class="dual-range">
+                <input type="range" id="p3-slider-hstart" min="0.10" max="0.50" step="0.02" value="0.30" />
+                <input type="range" id="p3-slider-hend" min="0.50" max="0.90" step="0.02" value="0.70" />
+              </div>
+            </label>
+            <label>
+              Spatial Unlock Start: <span id="p3-val-unlock">0.65</span>
+              <input type="range" id="p3-slider-unlock" min="0.50" max="0.85" step="0.02" value="0.65" />
+            </label>
+            <label>
+              Final Parallax Shift: <span id="p3-val-parallax">0.045</span>
+              <input type="range" id="p3-slider-parallax" min="0.010" max="0.090" step="0.005" value="0.045" />
+            </label>
+            <label>
+              Diff Map Gain: <span id="p3-val-gain">6.0x</span>
+              <input type="range" id="p3-slider-gain" min="1.0" max="20.0" step="1.0" value="6.0" />
+            </label>
+          </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- PROTOTYPE 02 CONTROLS (Independent Proxy Reconstruction) -->
+        <!-- ========================================================= -->
+        <div id="panel-proto-02" class="proto-subpanel panel-hidden">
+          <div class="section-label">COMPARISON MODES</div>
+          <div class="dev-row btn-group">
+            <button id="p2-btn-original" class="mode-btn">ORIGINAL</button>
+            <button id="p2-btn-proxy" class="mode-btn active">PROXY</button>
+            <button id="p2-btn-parallax" class="mode-btn">PARALLAX</button>
+            <button id="p2-btn-mask" class="mode-btn">MASK DEBUG</button>
+          </div>
+
+          <div class="section-label">MOTION &amp; BEHAVIOR</div>
+          <div class="dev-row btn-group">
+            <button id="p2-btn-motion-pointer" class="tech-btn active">Pointer (Manual)</button>
+            <button id="p2-btn-motion-sweep" class="tech-btn">Scripted Sweep (Auto)</button>
+          </div>
+
+          <div class="dev-row">
+            <button id="p2-btn-flare-mode" class="action-btn">Flare: SPIRE-LOCKED</button>
+          </div>
+
+          <div class="section-label">LAYER ISOLATION (TOGGLE)</div>
+          <div class="dev-row layer-btn-grid">
+            <button id="layer-btn-sky" class="layer-toggle-btn active" title="Layer A: Deep Sky / Planet">A: Sky</button>
+            <button id="layer-btn-ribbons" class="layer-toggle-btn active" title="Layer B: Magenta Ribbons">B: Ribbons</button>
+            <button id="layer-btn-sentinel" class="layer-toggle-btn active" title="Layer C: Western Sentinel">C: Sentinel</button>
+            <button id="layer-btn-citadel" class="layer-toggle-btn active" title="Layer D: Solar Citadel">D: Citadel</button>
+            <button id="layer-btn-needles" class="layer-toggle-btn active" title="Layer E: Needles">E: Needles</button>
+            <button id="layer-btn-water" class="layer-toggle-btn active" title="Layer F: Water">F: Water</button>
+            <button id="layer-btn-flare" class="layer-toggle-btn active" title="Layer G: Flare">G: Flare</button>
+          </div>
+
+          <div class="section-label">TUNABLE PARAMETERS</div>
+          <div class="dev-slider-group">
+            <label>
+              Parallax Amplitude: <span id="p2-val-shift">0.055</span>
+              <input type="range" id="p2-slider-shift" min="0.010" max="0.120" step="0.005" value="0.055" />
+            </label>
+            <label>
+              Camera Push: <span id="p2-val-push">0.080</span>
+              <input type="range" id="p2-slider-push" min="0.000" max="0.200" step="0.005" value="0.080" />
+            </label>
+            <label>
+              Sentinel Depth (C): <span id="p2-val-sentinel-z">1.25</span>
+              <input type="range" id="p2-slider-sentinel-z" min="0.80" max="1.50" step="0.05" value="1.25" />
+            </label>
+            <label>
+              Citadel Depth (D): <span id="p2-val-citadel-z">0.95</span>
+              <input type="range" id="p2-slider-citadel-z" min="0.60" max="1.30" step="0.05" value="0.95" />
+            </label>
+          </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- PROTOTYPE 01 CONTROLS (Depth Awakening)                  -->
+        <!-- ========================================================= -->
+        <div id="panel-proto-01" class="proto-subpanel panel-hidden">
+          <div class="section-label">P01 DISPLAY MODE</div>
+          <div class="dev-row btn-group">
+            <button id="p1-btn-flat" class="mode-btn">ORIGINAL (Flat)</button>
+            <button id="p1-btn-depth" class="mode-btn active">AWAKENED (Depth)</button>
+            <button id="p1-btn-map" class="mode-btn">DEPTH MAP</button>
+          </div>
+
+          <div class="section-label">P01 TECHNIQUE</div>
+          <div class="dev-row btn-group">
+            <button id="p1-btn-tech-mesh" class="tech-btn active">Subdivided Mesh</button>
+            <button id="p1-btn-tech-pom" class="tech-btn">Parallax Occlusion</button>
+          </div>
+
+          <div class="dev-row">
+            <button id="p1-btn-reawaken" class="action-btn">Re-Awaken (Replay)</button>
+            <button id="p1-btn-toggle-parallax" class="action-btn active">Parallax: ON</button>
+          </div>
+
+          <div class="section-label">P01 PARAMETERS</div>
+          <div class="dev-slider-group">
+            <label>
+              Depth Strength: <span id="p1-val-depth">0.080</span>
+              <input type="range" id="p1-slider-depth" min="0.0" max="0.25" step="0.005" value="0.08" />
+            </label>
+            <label>
+              Camera Push: <span id="p1-val-push">0.120</span>
+              <input type="range" id="p1-slider-push" min="0.0" max="0.30" step="0.005" value="0.12" />
+            </label>
+            <label>
+              Parallax Tilt: <span id="p1-val-parallax">0.035</span>
+              <input type="range" id="p1-slider-parallax" min="0.0" max="0.10" step="0.002" value="0.035" />
+            </label>
+            <label>
+              Awakening Duration: <span id="p1-val-duration">5.0s</span>
+              <input type="range" id="p1-slider-duration" min="2.0" max="10.0" step="0.5" value="5.0" />
+            </label>
+          </div>
+        </div>
+
+        <div class="dev-hotkeys">
+          <small>Hotkeys: [1] P01 &bull; [2] P02 &bull; [3] P03 &bull; [4] P04 &bull; [Space] Toggle Flat/Vol &bull; [S] Sweep &bull; [F] Flare &bull; [H] Hide UI</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Transient Status HUD -->
+    <div id="status-toast" class="toast-hidden"></div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

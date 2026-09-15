@@ -1,0 +1,21 @@
+{
+  "name": "living-poster",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "jpeg-js": "^0.4.4",
+    "pngjs": "^7.0.0",
+    "puppeteer-core": "^25.11.0",
+    "vite": "^8.3.0"
+  },
+  "dependencies": {
+    "three": "^0.186.0"
+  }
+}
