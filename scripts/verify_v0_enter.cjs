@@ -45,8 +45,9 @@ async function main() {
     return {
       state: lp.getState(),
       pipeline: lp.getPipeline(),
-      p06Playing: lp.p06.state.playing,
-      hostP06Elapsed: window.__p06 && window.__p06.state.elapsed,
+      // V1 replaced LivingPoster's P06 rail with the melt timeline.
+      // Prototype 06 itself is still the lab at window.__p06.
+      hostP06Present: !!(window.__p06 && window.__p06.state),
     };
   });
 

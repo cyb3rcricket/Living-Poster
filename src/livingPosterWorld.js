@@ -1,4 +1,5 @@
 import { createV0WaterMaterial } from './shaders/livingPosterWater.js';
+import { WorldStreamer } from './world/worldStreamer.js';
 
 // ============================================================================
 // Living Poster V0 — world geometry module
@@ -14,11 +15,12 @@ import { createV0WaterMaterial } from './shaders/livingPosterWater.js';
 //   water + GenerateImage painterly luminance (sides only) + broad dabs +
 //   fBm. No mirror / tile. Opaque indigo–sapphire–cyan–foam. Shader does
 //   NOT discard canonical UV outside [0,1]; it remaps into the atlas.
-//   Geometry: P05 H1 FAR LINEAR, zFar = −3, zNear = 1.38, u ∈ [−0.75, 1.75].
+//   Geometry: P05 H1 FAR LINEAR, zFar = −3, zNear = 1.75, u ∈ [−0.75, 1.75].
 //   Atlas still covers u ∈ [−0.5, 1.5]; extra pad is painterly indigo, not
-//   clamp-stretch. Horizon feathers into atmosphere so the far row is not a
-//   card. Still (no Gerstner / Fresnel / alive warp). Citadel waterline is
-//   pulled forward to overlap the volume; side aprons sit behind the base.
+//   clamp-stretch. Horizon feathers into atmosphere. Near water (z > 1.35)
+//   drops in Y so the slab is not a table at the viewpoint. Still (no
+//   Gerstner / Fresnel / alive warp). Citadel waterline lifts only where
+//   landmark alpha stands, in a thin footing band.
 //
 // SENTINEL
 //   Painted front (layer-c-sentinel.png) via canonical projective sampling
@@ -34,15 +36,17 @@ import { createV0WaterMaterial } from './shaders/livingPosterWater.js';
 // DISTANT WORLD
 //   Midnight Needle: calibrated front card + a crossed card / shallow pair
 //   at the needle. Hidden envelope: painterly haze cards, darkened
-//   silhouettes, scene background indigo. Sky / Umbral Giant is infinitely
-//   distant (tracks camera translation, world-aligned — no planet parallax).
+//   silhouettes, scene background indigo. Sky / Umbral Giant is a curved
+//   cylinder that tracks camera translation (world-aligned — no planet
+//   parallax). The sky-clean texture has the painted ocean stripped so the
+//   dome does not carry a second sea.
 //
 // SUPPORTED CAMERA ENVELOPE (central channel)
-//   Rest pose (−0.020, 0.003, 1.892) is inside. Tightened so the H1 slab
-//   is not walked onto as a table.
-//   X [−0.070,  0.028]
+//   Rest pose (−0.020, 0.003, 1.892) is inside. V1 exploration range;
+//   near-water Y drop covers the old "don't walk onto the slab" limit.
+//   X [−0.090,  0.038]
 //   Y [ 0.000,  0.018]
-//   Z [ 1.858,  1.970]
+//   Z [ 1.780,  1.970]
 //
 // COLLIDERS (XZ; movement module clamps)
 //   citadel        aabb   X[0.041, 0.705] Z[0.610, 1.032]
@@ -64,16 +68,16 @@ const CANON_FOV = 53.130102;
 const U_PAD = 0.5;
 const GEO_PAD = 0.75;
 const Z_FAR = -3.0;
-const Z_NEAR = 1.38;
+const Z_NEAR = 1.75;
 const SKY_DIST = 2.0;
 const SKY_SIZE = 2.7;
 
 const BOUNDS = Object.freeze({
-  minX: -0.070,
-  maxX: 0.028,
+  minX: -0.090,
+  maxX: 0.038,
   minY: 0.000,
   maxY: 0.018,
-  minZ: 1.858,
+  minZ: 1.780,
   maxZ: 1.970,
 });
 
@@ -222,16 +226,10 @@ const SKY_FRAG = /* glsl */ `
     vec2 uv = (vUv - 0.5) / uCover + 0.5;
     vec4 sky = texture2D(uSky, clamp(uv, vec2(0.001), vec2(0.999)));
     vec4 haze = texture2D(uHaze, vUv);
-    // Sky card must not carry the painted ocean (that reads as a second rectangle).
-    float horizonUv = 169.0 / 1024.0;
-    float waterBand = 1.0 - smoothstep(horizonUv - 0.012, horizonUv + 0.028, uv.y);
-    vec2 horizonSample = vec2(uv.x, clamp(horizonUv + 0.04 + uv.y * 0.08, 0.001, 0.999));
-    vec3 horizonSky = texture2D(uSky, horizonSample).rgb;
-    sky.rgb = mix(sky.rgb, mix(horizonSky, haze.rgb * vec3(0.45, 0.50, 0.62), 0.22), waterBand);
-    float inx = smoothstep(-0.02, 0.03, uv.x) * smoothstep(-0.02, 0.03, 1.0 - uv.x);
-    float iny = smoothstep(-0.02, 0.03, uv.y) * smoothstep(-0.02, 0.03, 1.0 - uv.y);
+    float inx = smoothstep(-0.04, 0.05, uv.x) * smoothstep(-0.04, 0.05, 1.0 - uv.x);
+    float iny = smoothstep(-0.04, 0.05, uv.y) * smoothstep(-0.04, 0.05, 1.0 - uv.y);
     float w = clamp(inx * iny, 0.0, 1.0);
-    vec3 fill = mix(vec3(0.025, 0.03, 0.07), haze.rgb * vec3(0.35, 0.40, 0.55), 0.40);
+    vec3 fill = mix(vec3(0.015, 0.02, 0.05), haze.rgb * vec3(0.35, 0.40, 0.55), 0.40);
     vec3 col = mix(fill, sky.rgb, w);
     gl_FragColor = vec4(col, 1.0);
     #include <colorspace_fragment>
@@ -334,7 +332,9 @@ export function createLivingPosterWorld({ THREE, renderer, container, camera, sc
   const textures = {};
   let skyFollow = null;
   let ribbonA = null;
+  let ribbonCurved = null;
   let ribbonT = 0;
+  let streamer = null;
   let loaded = false;
 
   function track(obj) {
@@ -363,6 +363,11 @@ export function createLivingPosterWorld({ THREE, renderer, container, camera, sc
 
   function pushWaterVert(positions, rest, profileT, u, v, z, t) {
     const p = unprojectCanon(u, v, z);
+    // V1: drop the near slab so the channel water is not a table at the viewpoint.
+    if (z > 1.35) {
+      const tNear = (z - 1.35) / (Z_NEAR - 1.35);
+      p.y = mix(p.y, -0.22, tNear * 0.7);
+    }
     positions.push(p.x, p.y, p.z);
     rest.push(p.x, p.y, p.z);
     profileT.push(t);
@@ -394,7 +399,7 @@ export function createLivingPosterWorld({ THREE, renderer, container, camera, sc
 
   function buildWater() {
     const segsW = 96;
-    const segsH = 48;
+    const segsH = 64;
     const u0 = -GEO_PAD;
     const u1 = 1 + GEO_PAD;
     const positions = [];
@@ -682,29 +687,35 @@ export function createLivingPosterWorld({ THREE, renderer, container, camera, sc
       uniforms: {
         uSky: { value: textures.sky },
         uHaze: { value: textures.haze },
-        uCover: { value: 2.0 / SKY_SIZE },
+        uCover: { value: 0.38 },
       },
       vertexShader: SKY_VERT,
       fragmentShader: SKY_FRAG,
       depthTest: true,
       depthWrite: false,
-      side: THREE.FrontSide,
+      side: THREE.BackSide,
     }));
-    const skyGeo = track(new THREE.PlaneGeometry(SKY_SIZE, SKY_SIZE));
+
+    // Curved panoramic cylinder: radius 6.0, height 6.5, arc ~176° facing -Z
+    const radius = 6.0;
+    const height = 6.5;
+    const arc = Math.PI * 0.98;
+    const thetaStart = Math.PI - arc * 0.5;
+    const skyGeo = track(new THREE.CylinderGeometry(radius, radius, height, 48, 8, true, thetaStart, arc));
     const skyMesh = new THREE.Mesh(skyGeo, skyMat);
-    skyMesh.position.set(0, 0, -SKY_DIST);
+    skyMesh.position.set(0, 0.2, 0);
     skyMesh.renderOrder = 0;
     skyMesh.name = 'lp-umbral-giant';
     skyMesh.frustumCulled = false;
     skyFollow.add(skyMesh);
 
     const voidMat = track(new THREE.MeshBasicMaterial({
-      color: 0x0b1020,
+      color: 0x060a16,
       side: THREE.BackSide,
       depthWrite: false,
       depthTest: false,
     }));
-    const voidMesh = new THREE.Mesh(track(new THREE.SphereGeometry(48, 16, 12)), voidMat);
+    const voidMesh = new THREE.Mesh(track(new THREE.SphereGeometry(48, 24, 16)), voidMat);
     voidMesh.renderOrder = -1;
     voidMesh.name = 'lp-void-sphere';
     voidMesh.frustumCulled = false;
@@ -758,6 +769,32 @@ export function createLivingPosterWorld({ THREE, renderer, container, camera, sc
     });
     ribbonA.name = 'lp-ribbons';
     group.add(ribbonA);
+
+    // 3D curved atmospheric ribbon strip weaving between world layers
+    const ribbonGeo = track(new THREE.PlaneGeometry(2.0, 0.28, 36, 4));
+    const pos = ribbonGeo.attributes.position;
+    for (let i = 0; i < pos.count; i++) {
+      const x = pos.getX(i);
+      const y = pos.getY(i);
+      // Curve in Z between layers Z=0.35 and Z=0.55
+      const curveZ = Math.sin(x * 3.2) * 0.09 + Math.cos(x * 1.8) * 0.05;
+      pos.setZ(i, curveZ);
+      pos.setY(i, y + Math.sin(x * 2.5) * 0.04);
+    }
+    ribbonGeo.computeVertexNormals();
+
+    const ribbonMat = track(new THREE.MeshBasicMaterial({
+      map: textures.ribbons,
+      transparent: true,
+      opacity: 0.85,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+    }));
+    ribbonCurved = new THREE.Mesh(ribbonGeo, ribbonMat);
+    ribbonCurved.position.set(0, 0.10, 0.46);
+    ribbonCurved.renderOrder = 3;
+    ribbonCurved.name = 'lp-ribbons-curved';
+    group.add(ribbonCurved);
   }
 
   function buildFlare() {
@@ -832,12 +869,13 @@ export function createLivingPosterWorld({ THREE, renderer, container, camera, sc
     buildSentinel(ringsData);
     buildWater();
     buildFlare();
+    streamer = new WorldStreamer(group);
 
     loaded = true;
     return group;
   }
 
-  function update(dt, cam) {
+  function update(dt, cam, elapsed, immediate = false) {
     const c = cam || camera;
     if (!loaded || !c) return;
     if (skyFollow) {
@@ -847,9 +885,20 @@ export function createLivingPosterWorld({ THREE, renderer, container, camera, sc
     if (ribbonA) {
       ribbonA.position.x = Math.sin(ribbonT * 0.012) * 0.002;
     }
+    if (ribbonCurved) {
+      ribbonCurved.position.x = Math.sin(ribbonT * 0.4) * 0.015;
+      ribbonCurved.position.y = 0.10 + Math.cos(ribbonT * 0.3) * 0.008;
+    }
+    if (streamer) {
+      streamer.update(elapsed != null ? elapsed : ribbonT, c, immediate);
+    }
   }
 
   function dispose() {
+    if (streamer) {
+      streamer.dispose();
+      streamer = null;
+    }
     group.traverse((obj) => {
       if (obj.geometry && obj.geometry.dispose) obj.geometry.dispose();
       if (obj.material) {
@@ -872,5 +921,14 @@ export function createLivingPosterWorld({ THREE, renderer, container, camera, sc
     loadAssets,
     update,
     dispose,
+    get streamer() {
+      return streamer;
+    },
+    toggleDebugColors() {
+      return streamer ? streamer.toggleDebugColors() : false;
+    },
+    toggleBoundaries() {
+      return streamer ? streamer.toggleBoundaries() : false;
+    },
   };
 }

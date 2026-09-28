@@ -101,7 +101,9 @@ async function main() {
       lp.worldScene.traverse((o) => {
         if (!o.name) return;
         if (p.mode === 'water-only') {
-          const hide = /citadel|sentinel|needles|ribbons|flare/i.test(o.name);
+          // V1 adds the melt mesh, brushstroke particles, and streamed crystals
+          // on top of the V0 landmarks. Hide those too so this frame is the ocean.
+          const hide = /citadel|sentinel|needles|ribbons|flare|chunk|crystal|melt|brushstroke|streamer/i.test(o.name);
           if (hide) o.visible = false;
         } else if (o.visible === false) {
           o.visible = true;

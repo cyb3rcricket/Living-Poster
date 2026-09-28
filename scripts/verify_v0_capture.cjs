@@ -144,15 +144,16 @@ async function main() {
   const posterPath = path.join(OUT_DIR, '01-poster.png');
   await shotCanvas(page, posterPath);
 
-  // 2. Mid-journey (P06 rail, still prototypes pipeline)
+  // 2. Mid-journey. V1 replaced the P06 rail on LivingPoster with the melt
+  // timeline, so this seeks t=10.5 (WORLD GENERATION) instead of p06.seek(10.10).
+  // Lab prototype 06 is still checked above via ?p=6.
   const mid = await page.evaluate(() => {
     const lp = window.__livingPoster;
     lp.resetToPoster();
-    lp.p06.seek(10.10, true);
+    lp.seek(10.5);
     lp.update(performance.now());
     return {
       state: lp.getState(),
-      p06: lp.p06.getTelemetry(),
       pipeline: lp.getPipeline(),
     };
   });
