@@ -21,6 +21,7 @@ const ROOT = path.resolve(__dirname, '..');
 const OUT = path.join(ROOT, 'reference/experimental/living-poster-v0');
 const SRC = path.join(OUT, 'source');
 const SEA_ONLY = path.join(ROOT, 'reference/experimental/prototype-05/generated/layer-f-water-sea-only.png');
+const ORIG_WATER = path.join(ROOT, 'reference/experimental/prototype-02/layer-f-water.png');
 const SENTINEL = path.join(ROOT, 'reference/experimental/prototype-02/layer-c-sentinel.png');
 const SKY = path.join(ROOT, 'reference/experimental/prototype-02/layer-a-deep-sky.png');
 const CITADEL = path.join(ROOT, 'reference/experimental/prototype-02/layer-d-citadel.png');
@@ -404,19 +405,19 @@ function buildOcean(sea, paint) {
     }
   }
 
-  // Soft blur a 2px band at each seam so the join is not a column.
+  // Soft blur a wider band at each seam so the join is not a column.
   function blurSeam(xSeam) {
     for (let y = yWater0; y < ATH; y++) {
-      for (let dx = -3; dx <= 3; dx++) {
+      for (let dx = -8; dx <= 8; dx++) {
         const x = xSeam + dx;
         if (x < 0 || x >= ATW) continue;
         let r = 0;
         let g = 0;
         let b = 0;
         let wsum = 0;
-        for (let k = -2; k <= 2; k++) {
+        for (let k = -5; k <= 5; k++) {
           const xx = clamp(x + k, 0, ATW - 1);
-          const w = 3 - Math.abs(k);
+          const w = 6 - Math.abs(k);
           const i = (y * ATW + xx) * 4;
           r += atlas.data[i] * w;
           g += atlas.data[i + 1] * w;
@@ -424,7 +425,7 @@ function buildOcean(sea, paint) {
           wsum += w;
         }
         const i = (y * ATW + x) * 4;
-        const t = 0.55;
+        const t = 0.62 * (1 - Math.abs(dx) / 9);
         atlas.data[i] = Math.round(lerp(atlas.data[i], r / wsum, t));
         atlas.data[i + 1] = Math.round(lerp(atlas.data[i + 1], g / wsum, t));
         atlas.data[i + 2] = Math.round(lerp(atlas.data[i + 2], b / wsum, t));
@@ -514,6 +515,7 @@ function buildSkyClean(poster, sky, sent, citadel, needles) {
   const w = 1024;
   const h = 1024;
   const dst = new PNG({ width: w, height: h });
+  const yHoriz = Math.floor(V0 * h) - 8;
   for (let i = 0; i < w * h; i++) {
     const p = i * 4;
     const occ = Math.max(sent.data[p + 3], citadel.data[p + 3], needles.data[p + 3]) / 255;
@@ -522,6 +524,20 @@ function buildSkyClean(poster, sky, sent, citadel, needles) {
     dst.data[p + 1] = useFill ? sky.data[p + 1] : poster.data[p + 1];
     dst.data[p + 2] = useFill ? sky.data[p + 2] : poster.data[p + 2];
     dst.data[p + 3] = 255;
+  }
+  // Strip the painted ocean off the sky card — WORLD water is the 3D slab.
+  for (let y = yHoriz; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const srcY = clamp(yHoriz - 2 - Math.floor(hash2(x, y) * 10), 0, yHoriz - 1);
+      const srcX = clamp(x + Math.round((hash2(y, x) - 0.5) * 6), 0, w - 1);
+      const si = (srcY * w + srcX) * 4;
+      const di = (y * w + x) * 4;
+      const fade = smooth01((y - yHoriz) / 10);
+      dst.data[di] = Math.round(lerp(dst.data[di], sky.data[si], 0.35 + 0.65 * fade));
+      dst.data[di + 1] = Math.round(lerp(dst.data[di + 1], sky.data[si + 1], 0.35 + 0.65 * fade));
+      dst.data[di + 2] = Math.round(lerp(dst.data[di + 2], sky.data[si + 2], 0.35 + 0.65 * fade));
+      dst.data[di + 3] = 255;
+    }
   }
   return dst;
 }
@@ -575,26 +591,133 @@ function buildSentinelRings(sent) {
   };
 }
 
-function verifyCenterIdentity(atlas, sea) {
-  let max = 0;
-  let n = 0;
-  for (let y = 0; y < 1024; y++) {
+function repairLandmarkInpaint(atlas, sea, origWater, citadel, sent, needles) {
+  const yWater0 = Math.floor(V0 * 1024);
+  let changed = 0;
+  for (let y = yWater0; y < 1024; y++) {
     for (let x = 0; x < 1024; x++) {
-      const si = (y * 1024 + x) * 4;
-      const di = (y * ATW + (ORIG_X0 + x)) * 4;
-      const dr = Math.abs(atlas.data[di] - sea.data[si]);
-      const dg = Math.abs(atlas.data[di + 1] - sea.data[si + 1]);
-      const db = Math.abs(atlas.data[di + 2] - sea.data[si + 2]);
-      const da = Math.abs(atlas.data[di + 3] - sea.data[si + 3]);
-      const m = Math.max(dr, dg, db, da);
-      if (m > max) max = m;
-      if (m > 0) n++;
+      const i = (y * 1024 + x) * 4;
+      const occ = Math.max(citadel.data[i + 3], sent.data[i + 3], needles.data[i + 3]);
+      const origA = origWater.data[i + 3];
+      if (occ < 22 && origA > 40) continue;
+      if (occ < 12) continue;
+
+      let srcX = x;
+      for (let k = 1; k < 120; k++) {
+        const xl = x - k;
+        const xr = x + k;
+        if (xl >= 0) {
+          const li = (y * 1024 + xl) * 4;
+          const o = Math.max(citadel.data[li + 3], sent.data[li + 3], needles.data[li + 3]);
+          if (o < 18 && origWater.data[li + 3] > 40) {
+            srcX = xl;
+            break;
+          }
+        }
+        if (xr < 1024) {
+          const ri = (y * 1024 + xr) * 4;
+          const o = Math.max(citadel.data[ri + 3], sent.data[ri + 3], needles.data[ri + 3]);
+          if (o < 18 && origWater.data[ri + 3] > 40) {
+            srcX = xr;
+            break;
+          }
+        }
+      }
+      const srcY = clamp(y + (hash2(x * 0.2, y) - 0.5) * 6, yWater0, 1023);
+      const sampled = sampleBilinear(sea, srcX + (hash2(y, x) - 0.5) * 4, srcY);
+      const n1 = fbm(x * 0.011, y * 0.016, 3);
+      let r = sampled[0] + (n1 - 0.5) * 8;
+      let g = sampled[1] + (n1 - 0.5) * 7;
+      let b = sampled[2] + (n1 - 0.5) * 6;
+      const ax = ORIG_X0 + x;
+      const di = (y * ATW + ax) * 4;
+      const w = smooth01((occ - 14) / 70);
+      atlas.data[di] = clamp(Math.round(lerp(atlas.data[di], r, w)), 0, 255);
+      atlas.data[di + 1] = clamp(Math.round(lerp(atlas.data[di + 1], g, w)), 0, 255);
+      atlas.data[di + 2] = clamp(Math.round(lerp(atlas.data[di + 2], b, w)), 0, 255);
+      atlas.data[di + 3] = 255;
+      changed++;
     }
   }
-  // Seams may have been blurred 3px into the original. Measure protected interior.
+
+  // Soften occupancy edges so inpaint is not a rectangular patch.
+  for (let y = yWater0; y < 1024; y++) {
+    for (let x = 1; x < 1023; x++) {
+      const i = (y * 1024 + x) * 4;
+      const occ = Math.max(citadel.data[i + 3], sent.data[i + 3], needles.data[i + 3]);
+      if (occ < 8 || occ > 200) continue;
+      const ax = ORIG_X0 + x;
+      let r = 0;
+      let g = 0;
+      let b = 0;
+      let wsum = 0;
+      for (let k = -4; k <= 4; k++) {
+        const xx = clamp(ax + k, 0, ATW - 1);
+        const w = 5 - Math.abs(k);
+        const pi = (y * ATW + xx) * 4;
+        r += atlas.data[pi] * w;
+        g += atlas.data[pi + 1] * w;
+        b += atlas.data[pi + 2] * w;
+        wsum += w;
+      }
+      const di = (y * ATW + ax) * 4;
+      const t = 0.55;
+      atlas.data[di] = Math.round(lerp(atlas.data[di], r / wsum, t));
+      atlas.data[di + 1] = Math.round(lerp(atlas.data[di + 1], g / wsum, t));
+      atlas.data[di + 2] = Math.round(lerp(atlas.data[di + 2], b / wsum, t));
+    }
+  }
+  console.log(`Repaired landmark inpaint pixels: ${changed}`);
+}
+
+function paintCitadelContact(atlas, origWater, citadel) {
+  const y0 = Math.floor(0.84 * 1024);
+  let n = 0;
+  for (let y = y0; y <= 1023; y++) {
+    for (let x = 500; x < 1024; x++) {
+      const i = (y * 1024 + x) * 4;
+      const a = citadel.data[i + 3];
+      let edge = false;
+      if (a > 30) {
+        for (let k = 1; k <= 6 && !edge; k++) {
+          const xl = x - k;
+          const xr = x + k;
+          const yd = y + k;
+          if (xl >= 0 && citadel.data[(y * 1024 + xl) * 4 + 3] < 20) edge = true;
+          if (xr < 1024 && citadel.data[(y * 1024 + xr) * 4 + 3] < 20) edge = true;
+          if (yd < 1024 && citadel.data[(yd * 1024 + x) * 4 + 3] < 20) edge = true;
+        }
+      } else {
+        for (let k = 1; k <= 5 && !edge; k++) {
+          const xr = x + k;
+          const xl = x - k;
+          if (xr < 1024 && citadel.data[(y * 1024 + xr) * 4 + 3] > 80) edge = true;
+          if (xl >= 0 && citadel.data[(y * 1024 + xl) * 4 + 3] > 80) edge = true;
+        }
+      }
+      if (!edge) continue;
+      const ax = ORIG_X0 + x;
+      const di = (y * ATW + ax) * 4;
+      const foam = 0.34;
+      const or = origWater.data[i];
+      const og = origWater.data[i + 1];
+      const ob = origWater.data[i + 2];
+      atlas.data[di] = clamp(Math.round(lerp(atlas.data[di], or * 0.4 + 110, foam)), 0, 255);
+      atlas.data[di + 1] = clamp(Math.round(lerp(atlas.data[di + 1], og * 0.35 + 170, foam)), 0, 255);
+      atlas.data[di + 2] = clamp(Math.round(lerp(atlas.data[di + 2], ob * 0.3 + 185, foam)), 0, 255);
+      n++;
+    }
+  }
+  console.log(`Citadel contact foam texels: ${n}`);
+}
+
+function verifyCenterIdentity(atlas, sea, citadel, sent, needles, origWater) {
+  let max = 0;
+  let n = 0;
   let interiorMax = 0;
+  const yWater0 = Math.floor(V0 * 1024);
   for (let y = 0; y < 1024; y++) {
-    for (let x = 8; x < 1016; x++) {
+    for (let x = 0; x < 1024; x++) {
       const si = (y * 1024 + x) * 4;
       const di = (y * ATW + (ORIG_X0 + x)) * 4;
       const m = Math.max(
@@ -603,10 +726,16 @@ function verifyCenterIdentity(atlas, sea) {
         Math.abs(atlas.data[di + 2] - sea.data[si + 2]),
         Math.abs(atlas.data[di + 3] - sea.data[si + 3]),
       );
-      if (m > interiorMax) interiorMax = m;
+      if (m > max) max = m;
+      if (m > 0) n++;
+      const occ = Math.max(citadel.data[si + 3], sent.data[si + 3], needles.data[si + 3]);
+      const origA = origWater.data[si + 3];
+      const isOpenSea = occ < 18 && origA > 40;
+      const inSeam = x < 18 || x > 1005;
+      if (isOpenSea && !inSeam && y >= yWater0 && m > interiorMax) interiorMax = m;
     }
   }
-  console.log(`Center identity: interior maxΔ=${interiorMax}  full maxΔ=${max}  changed=${n}`);
+  console.log(`Open-sea identity: interior maxΔ=${interiorMax}  full maxΔ=${max}  changed=${n}`);
   return { interiorMax, max, changed: n, uPad: U_PAD, atlas: `${ATW}x${ATH}` };
 }
 
@@ -618,6 +747,7 @@ function main() {
   const citadel = readImage(CITADEL);
   const needles = readImage(NEEDLES);
   const poster = readImage(POSTER);
+  const origWater = readImage(ORIG_WATER);
   const paintPath = firstExisting([
     path.join(SRC, 'ocean-paint-16x9.jpg'),
     path.join(SRC, 'ocean-paint-16x9.png'),
@@ -637,7 +767,27 @@ function main() {
   if (!paint) console.warn('No GenerateImage ocean source; procedural only.');
 
   const atlas = buildOcean(sea, paint);
-  const stats = verifyCenterIdentity(atlas, sea);
+  repairLandmarkInpaint(atlas, sea, origWater, citadel, sent, needles);
+  paintCitadelContact(atlas, origWater, citadel);
+  // Restore original open-sea pixels after edge blur / foam.
+  let restored = 0;
+  for (let y = 0; y < 1024; y++) {
+    for (let x = 18; x < 1006; x++) {
+      const i = (y * 1024 + x) * 4;
+      const occ = Math.max(citadel.data[i + 3], sent.data[i + 3], needles.data[i + 3]);
+      if (occ >= 18) continue;
+      if (origWater.data[i + 3] < 40 && sea.data[i + 3] < 40) continue;
+      if (origWater.data[i + 3] < 40) continue;
+      const di = (y * ATW + (ORIG_X0 + x)) * 4;
+      atlas.data[di] = sea.data[i];
+      atlas.data[di + 1] = sea.data[i + 1];
+      atlas.data[di + 2] = sea.data[i + 2];
+      atlas.data[di + 3] = sea.data[i + 3];
+      restored++;
+    }
+  }
+  console.log(`Restored open-sea texels: ${restored}`);
+  const stats = verifyCenterIdentity(atlas, sea, citadel, sent, needles, origWater);
   savePng(path.join(OUT, 'ocean-continuation-2048x1024.png'), atlas);
 
   const side = buildSentinelSide(ice);
@@ -655,7 +805,7 @@ function main() {
   console.log(`Saved ${path.relative(ROOT, ringsPath)}  rings=${rings.rings.length}`);
 
   const meta = {
-    method: 'low-frequency edge extension + warped original-water stamps + GenerateImage luminance (sides only) + painterly dabs + fBm. No mirror/tile.',
+    method: 'low-frequency edge extension + warped original-water stamps + GenerateImage luminance (sides only) + painterly dabs + fBm. Landmark inpaint repaired. Sky card has no ocean band. No mirror/tile.',
     atlas: stats,
     seaOnly: path.relative(ROOT, SEA_ONLY),
     usedPaint: !!paint,

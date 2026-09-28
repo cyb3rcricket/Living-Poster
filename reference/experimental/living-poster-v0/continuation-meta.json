@@ -1,9 +1,9 @@
 {
-  "method": "low-frequency edge extension + warped original-water stamps + GenerateImage luminance (sides only) + painterly dabs + fBm. No mirror/tile.",
+  "method": "low-frequency edge extension + warped original-water stamps + GenerateImage luminance (sides only) + painterly dabs + fBm. Landmark inpaint repaired. Sky card has no ocean band. No mirror/tile.",
   "atlas": {
     "interiorMax": 0,
-    "max": 12,
-    "changed": 1025,
+    "max": 216,
+    "changed": 68422,
     "uPad": 0.5,
     "atlas": "2048x1024"
   },
