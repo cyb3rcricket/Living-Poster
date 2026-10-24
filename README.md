@@ -53,6 +53,14 @@ This repo is the lab, not just the final piece. Six prototype iterations are kep
 
 Supporting code for the final experience lives in `src/livingPosterWorld.js` (ocean continuation, Sentinel and Citadel reuse, ribbons, haze), `src/world/crystalGenerator.js` (a seeded, deterministic crystal generator that sticks strictly to the poster's palette — no greens, no browns, no generic rocks), `src/shaders/` (depth, water, and paint-melt shaders), and `src/livingPosterQuality.js` (resolution/quality scaling).
 
+## Related variant: Ice-Ocean
+
+Living Poster wasn't the only streamed world I built in that stretch. [Ice-Ocean](variants/ice-ocean/) was the sibling experiment: a first-person exploration game where you drift over a dark animated sea beneath a blue-violet planet, steering through seeded ice fields to find pink signal artifacts. Where Living Poster starts from one painting and builds the world out of it, Ice-Ocean generates everything procedurally — no source image, no bounded corridor, travel in every direction for as long as you keep going.
+
+The DNA is the same, which is why it lives here now. Both projects stream the world in chunks around the viewer and dispose of what's left behind — Ice-Ocean in 34-unit chunks in a 5×5 window, generated from one fixed seed (`WORLD_SEED = 271828`), with height-aware collision so you can fly over a spire field but not descend through it. It's the freer, more game-shaped version of the ideas that Living Poster's world streamer uses in a tight corridor. Ice-Ocean is folded in here as a named variant, preserved as-is with its own `package.json` (Three.js `^0.180.0`) — it isn't wired into this repo's build. Its standalone repo is archived.
+
+- [Ice-Ocean variant](variants/ice-ocean/) — full source, its original README, and its `VALIDATION.md` from September 2026
+
 ## Tech stack
 
 - JavaScript + [Three.js](https://threejs.org) (`three ^0.186.0`) + Vite
